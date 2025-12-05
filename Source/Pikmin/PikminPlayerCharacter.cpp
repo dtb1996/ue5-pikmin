@@ -11,6 +11,7 @@
 #include "AI/PikminCharacter.h"
 #include "AI/PikminState.h"
 #include "AI/PikminAIController.h"
+#include "Systems/PikminWhistleComponent.h"
 
 APikminPlayerCharacter::APikminPlayerCharacter()
 {
@@ -38,6 +39,9 @@ APikminPlayerCharacter::APikminPlayerCharacter()
     FollowLocationComponent = CreateDefaultSubobject<USceneComponent>(TEXT("FollowLocation"));
     FollowLocationComponent->SetupAttachment(RootComponent);
     FollowLocationComponent->SetRelativeLocation(FVector(-100.0f, 0.0f, -90.0f));
+
+    // Whistle component
+    WhistleComponent = CreateDefaultSubobject<UPikminWhistleComponent>(TEXT("WhistleComponent"));
 }
 
 void APikminPlayerCharacter::BeginPlay()

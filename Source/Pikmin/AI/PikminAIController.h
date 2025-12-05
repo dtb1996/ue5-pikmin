@@ -27,11 +27,17 @@ public:
 
     void SetLeaderFollowTarget(USceneComponent* NewTarget);
 
+    void RequestFollow(AActor* Caller);
+    void RequestIdle();
+
 private:
     void UpdateState(float DeltaTime);
 
+    bool IsBusy() const;
+
     void IdleState(float DeltaTime);
     void FollowState(float DeltaTime);
+
 
     EPikminState CurrentState = EPikminState::Idle;
 

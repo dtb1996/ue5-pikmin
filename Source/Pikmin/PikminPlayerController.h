@@ -60,7 +60,8 @@ private:
     void HandleMoveInput(const FInputActionValue& Value);
     void HandleCameraRotate(const FInputActionValue& Value);
     void HandleCameraZoom(const FInputActionValue& Value);
-    void HandleWhistle(const FInputActionValue& Value);
+    void HandleWhistleStarted(const FInputActionValue& Value);
+    void HandleWhistleCompleted(const FInputActionValue& Value);
     void HandleDismiss(const FInputActionValue& Value);
     void HandleThrowAimPressed(const FInputActionValue& Value);
     void HandleThrowAimReleased(const FInputActionValue& Value);

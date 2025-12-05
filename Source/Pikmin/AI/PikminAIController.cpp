@@ -3,6 +3,7 @@
 
 #include "PikminAIController.h"
 #include "PikminCharacter.h"
+#include "PikminPlayerCharacter.h"
 
 APikminAIController::APikminAIController()
 {
@@ -33,6 +34,35 @@ void APikminAIController::SetLeaderFollowTarget(USceneComponent* NewTarget)
     FollowTarget = NewTarget;
 }
 
+void APikminAIController::RequestFollow(AActor* Caller)
+{
+    if (!Caller)
+    {
+        return;
+    }
+
+    if (IsBusy())
+    {
+        return;
+    }
+
+    if (APikminPlayerCharacter* Player = Cast<APikminPlayerCharacter>(Caller))
+    {
+        FollowTarget = Player->FollowLocationComponent;
+        CurrentState = EPikminState::Following;
+    }
+}
+
+void APikminAIController::RequestIdle()
+{
+    if (IsBusy())
+    {
+        return;
+    }
+
+    CurrentState = EPikminState::Idle;
+}
+
 void APikminAIController::UpdateState(float DeltaTime)
 {
     switch (CurrentState)
@@ -49,6 +79,11 @@ void APikminAIController::UpdateState(float DeltaTime)
         IdleState(DeltaTime);
         break;
     }
+}
+
+bool APikminAIController::IsBusy() const
+{
+    return CurrentState == EPikminState::Carrying || CurrentState == EPikminState::Thrown;
 }
 
 void APikminAIController::IdleState(float DeltaTime)

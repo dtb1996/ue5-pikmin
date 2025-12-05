@@ -3,6 +3,7 @@
 #include "PikminCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "PikminAIController.h"
+#include "Components/CapsuleComponent.h"
 
 APikminCharacter::APikminCharacter()
 {
@@ -19,4 +20,20 @@ void APikminCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void APikminCharacter::OnWhistleSelect_Implementation(AActor* Caller)
+{
+	if (APikminAIController* AI = Cast<APikminAIController>(GetController()))
+	{
+		AI->RequestFollow(Caller);
+	}
+}
+
+void APikminCharacter::OnWhistleDeselect_Implementation(AActor* Caller)
+{
+	if (APikminAIController* AI = Cast<APikminAIController>(GetController()))
+	{
+		AI->RequestIdle();
+	}
 }

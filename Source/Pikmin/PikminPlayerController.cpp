@@ -12,6 +12,7 @@
 #include "PikminPlayerCharacter.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Systems/PikminWhistleComponent.h"
 
 APikminPlayerController::APikminPlayerController()
 {
@@ -72,7 +73,8 @@ void APikminPlayerController::SetupInputComponent()
 			EIC->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APikminPlayerController::HandleMoveInput);
 			EIC->BindAction(CameraRotateAction, ETriggerEvent::Triggered, this, &APikminPlayerController::HandleCameraRotate);
 			EIC->BindAction(CameraZoomAction, ETriggerEvent::Triggered, this, &APikminPlayerController::HandleCameraZoom);
-			EIC->BindAction(WhistleAction, ETriggerEvent::Started, this, &APikminPlayerController::HandleWhistle);
+			EIC->BindAction(WhistleAction, ETriggerEvent::Started, this, &APikminPlayerController::HandleWhistleStarted);
+			EIC->BindAction(WhistleAction, ETriggerEvent::Completed, this, &APikminPlayerController::HandleWhistleCompleted);
 			EIC->BindAction(DismissAction, ETriggerEvent::Started, this, &APikminPlayerController::HandleDismiss);
 			EIC->BindAction(ThrowAimAction, ETriggerEvent::Started, this, &APikminPlayerController::HandleThrowAimPressed);
 			EIC->BindAction(ThrowAimAction, ETriggerEvent::Completed, this, &APikminPlayerController::HandleThrowAimReleased);
@@ -148,11 +150,14 @@ void APikminPlayerController::HandleCameraZoom(const FInputActionValue& Value)
 	//CameraRig->SetZoomAlpha(NewZoom);
 }
 
-void APikminPlayerController::HandleWhistle(const FInputActionValue& Value)
+void APikminPlayerController::HandleWhistleStarted(const FInputActionValue& Value)
 {
-	if (APikminPlayerCharacter* PlayerCharacter = Cast<APikminPlayerCharacter>(GetPawn()))
+	if (APawn* PlayerPawn = GetPawn())
 	{
-		PlayerCharacter->CommandFollow();
+		if (auto Whistle = PlayerPawn->FindComponentByClass<UPikminWhistleComponent>())
+		{
+			Whistle->StartWhistle();
+		}
 	}
 
 	if (!CameraRig)
@@ -163,6 +168,17 @@ void APikminPlayerController::HandleWhistle(const FInputActionValue& Value)
 	CameraRig->EnterState(EPikminCameraState::CommandAim, 0.15f);
 
 	// TODO: trigger whistle gameplay effect here
+}
+
+void APikminPlayerController::HandleWhistleCompleted(const FInputActionValue& Value)
+{
+	if (APawn* PlayerPawn = GetPawn())
+	{
+		if (auto Whistle = PlayerPawn->FindComponentByClass<UPikminWhistleComponent>())
+		{
+			Whistle->EndWhistle();
+		}
+	}
 }
 
 void APikminPlayerController::HandleDismiss(const FInputActionValue& Value)
