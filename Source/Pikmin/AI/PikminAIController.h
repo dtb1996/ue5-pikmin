@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "PikminState.h"
+#include "Systems/PikminTaskSubsystem.h"
+#include "Interfaces/PikminTaskInteractable.h"
 #include "PikminAIController.generated.h"
 
 class APikminCharacter;
@@ -31,6 +33,8 @@ public:
     void RequestFollow(AActor* Caller);
     void RequestIdle();
 
+    void OnThrownLanded();
+
     bool IsBusy() const;
 
 private:
@@ -39,13 +43,23 @@ private:
     void IdleState(float DeltaTime);
     void FollowState(float DeltaTime);
     void ThrownState(float DeltaTime);
+    void WorkingState(float DeltaTime);
 
+    void TryFindTask();
 
     EPikminState CurrentState = EPikminState::Idle;
 
     APikminCharacter* ControlledPikmin;
 
+    TScriptInterface<IPikminTaskInteractable> ActiveTask;
+
+    float TimeSinceLastScan = 0.0f;
+    float ScanCooldown = 0.5f;
+
 protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     USceneComponent* FollowTarget;
+
+    UPROPERTY(EditAnywhere, Category = "Tasks")
+    float TaskSearchRadius = 300.f;
 };

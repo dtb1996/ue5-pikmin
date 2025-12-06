@@ -109,6 +109,6 @@ void APikminCharacter::OnThrowLanded()
 	// Tell AI it’s free again
 	if (APikminAIController* AI = Cast<APikminAIController>(GetController()))
 	{
-		AI->SetState(EPikminState::Idle);
+		AI->OnThrownLanded();
 	}
 }

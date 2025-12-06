@@ -4,6 +4,7 @@
 #include "PikminAIController.h"
 #include "PikminCharacter.h"
 #include "PikminPlayerCharacter.h"
+#include "Systems/PikminTaskSubsystem.h"
 
 APikminAIController::APikminAIController()
 {
@@ -46,6 +47,12 @@ void APikminAIController::RequestFollow(AActor* Caller)
         return;
     }
 
+    if (ActiveTask)
+    {
+        ActiveTask->Execute_UnassignPikmin(ActiveTask.GetObject(), ControlledPikmin);
+        ActiveTask = nullptr;
+    }
+
     if (APikminPlayerCharacter* Player = Cast<APikminPlayerCharacter>(Caller))
     {
         FollowTarget = Player->FollowLocationComponent;
@@ -61,6 +68,13 @@ void APikminAIController::RequestIdle()
     }
 
     CurrentState = EPikminState::Idle;
+}
+
+void APikminAIController::OnThrownLanded()
+{
+    CurrentState = EPikminState::Idle;
+
+    TryFindTask();
 }
 
 void APikminAIController::UpdateState(float DeltaTime)
@@ -79,6 +93,10 @@ void APikminAIController::UpdateState(float DeltaTime)
         ThrownState(DeltaTime);
         break;
 
+    case EPikminState::Working:
+        WorkingState(DeltaTime);
+        break;
+
     default:
         IdleState(DeltaTime);
         break;
@@ -93,6 +111,13 @@ bool APikminAIController::IsBusy() const
 void APikminAIController::IdleState(float DeltaTime)
 {
     StopMovement();
+
+    TimeSinceLastScan += DeltaTime;
+    if (TimeSinceLastScan >= ScanCooldown)
+    {
+        TimeSinceLastScan = 0.f;
+        TryFindTask();
+    }
 }
 
 void APikminAIController::FollowState(float DeltaTime)
@@ -118,4 +143,83 @@ void APikminAIController::FollowState(float DeltaTime)
 void APikminAIController::ThrownState(float DeltaTime)
 {
 
+}
+
+void APikminAIController::WorkingState(float DeltaTime)
+{
+    if (!ActiveTask)
+    {
+        SetState(EPikminState::Idle);
+        return;
+    }
+
+    FVector Target = ActiveTask->Execute_GetTaskLocation(ActiveTask.GetObject());
+    float Distance = FVector::Dist2D(Target, ControlledPikmin->GetActorLocation());
+
+    if (Distance > 50.0f)
+    {
+        MoveToLocation(Target, 50.0f);
+    }
+    else
+    {
+        StopMovement();
+
+        // TODO: attach to task actor socket
+    }
+}
+
+void APikminAIController::TryFindTask()
+{
+    if (!ControlledPikmin || CurrentState != EPikminState::Idle)
+    {
+        return;
+    }
+
+    auto TaskSubsystem = GetGameInstance()->GetSubsystem<UPikminTaskSubsystem>();
+    if (!TaskSubsystem)
+    {
+        return;
+    }
+
+    const FVector PikminLocation = ControlledPikmin->GetActorLocation();
+
+    TScriptInterface<IPikminTaskInteractable> BestTask;
+    float BestDistance = FLT_MAX;
+
+    for (auto Task : TaskSubsystem->Tasks)
+    {
+        if (!Task)
+        {
+            continue;
+        }
+
+        FVector TaskLocation = Task->Execute_GetTaskLocation(Task.GetObject());
+        float DistanceSquared = FVector::DistSquared(TaskLocation, PikminLocation);
+
+        DrawDebugSphere(GetWorld(), ControlledPikmin->GetActorLocation(), TaskSearchRadius, 24, FColor::Green, false, 0.05f);
+
+        if (DistanceSquared > TaskSearchRadius * TaskSearchRadius)
+        {
+            continue;
+        }
+
+        if (!Task->Execute_CanAcceptPikmin(Task.GetObject(), ControlledPikmin))
+        {
+            continue;
+        }
+
+        // Pick closest
+        if (DistanceSquared < BestDistance)
+        {
+            BestDistance = DistanceSquared;
+            BestTask = Task;
+        }
+    }
+
+    if (BestTask)
+    {
+        ActiveTask = BestTask;
+        BestTask->Execute_AssignPikmin(BestTask.GetObject(), ControlledPikmin);
+        SetState(EPikminState::Working);
+    }
 }

@@ -9,4 +9,5 @@ enum class EPikminState : uint8
     Following   UMETA(DisplayName = "Following"),
     Carrying    UMETA(DisplayName = "Carrying"),
     Thrown      UMETA(DisplayName = "Thrown"),
+    Working     UMETA(DisplayName = "Working"),
 };
