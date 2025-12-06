@@ -51,6 +51,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Gameplay")
     void CommandDismiss();
 
+    UFUNCTION(BlueprintCallable, Category = "Gameplay")
+    void CommandThrow();
+
 protected:   
     /** Camera rig class to spawn */
     UPROPERTY(EditDefaultsOnly, Category = "Camera")
@@ -59,5 +62,8 @@ protected:
     /** Runtime pointer to spawned rig */
     UPROPERTY()
     ACameraRig* SpawnedCameraRig;
+
+private:
+    FVector GetThrowAimPoint() const;
 };
 

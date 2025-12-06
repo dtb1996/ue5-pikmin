@@ -24,19 +24,21 @@ public:
     virtual void OnPossess(APawn* InPawn) override;
 
     void SetState(EPikminState NewState);
+    EPikminState GetState() const { return CurrentState; };
 
     void SetLeaderFollowTarget(USceneComponent* NewTarget);
 
     void RequestFollow(AActor* Caller);
     void RequestIdle();
 
+    bool IsBusy() const;
+
 private:
     void UpdateState(float DeltaTime);
 
-    bool IsBusy() const;
-
     void IdleState(float DeltaTime);
     void FollowState(float DeltaTime);
+    void ThrownState(float DeltaTime);
 
 
     EPikminState CurrentState = EPikminState::Idle;

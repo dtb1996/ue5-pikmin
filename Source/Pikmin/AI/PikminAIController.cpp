@@ -75,6 +75,10 @@ void APikminAIController::UpdateState(float DeltaTime)
         FollowState(DeltaTime);
         break;
 
+    case EPikminState::Thrown:
+        ThrownState(DeltaTime);
+        break;
+
     default:
         IdleState(DeltaTime);
         break;
@@ -109,4 +113,9 @@ void APikminAIController::FollowState(float DeltaTime)
     {
         StopMovement();
     }
+}
+
+void APikminAIController::ThrownState(float DeltaTime)
+{
+
 }

@@ -25,6 +25,9 @@ public:
     UFUNCTION(BlueprintCallable)
     const TArray<APikminCharacter*>& GetPikmin() const { return PikminArmy; }
 
+    UFUNCTION(BlueprintCallable)
+    APikminCharacter* GetNextThrowablePikmin(AActor* Player);
+
 private:
     UPROPERTY()
     TArray<APikminCharacter*> PikminArmy;

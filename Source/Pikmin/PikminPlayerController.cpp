@@ -201,6 +201,11 @@ void APikminPlayerController::HandleThrowAimPressed(const FInputActionValue& Val
 
 void APikminPlayerController::HandleThrowAimReleased(const FInputActionValue& Value)
 {
+	if (APikminPlayerCharacter* PlayerCharacter = Cast<APikminPlayerCharacter>(GetPawn()))
+	{
+		PlayerCharacter->CommandThrow();
+	}
+
 	if (!CameraRig)
 	{
 		return;

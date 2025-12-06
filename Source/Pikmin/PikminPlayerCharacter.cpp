@@ -121,3 +121,24 @@ void APikminPlayerCharacter::CommandDismiss()
         }
     }
 }
+
+void APikminPlayerCharacter::CommandThrow()
+{
+    UPikminManagerSubsystem* PikminManager = GetGameInstance()->GetSubsystem<UPikminManagerSubsystem>();
+    APikminCharacter* Pikmin = PikminManager->GetNextThrowablePikmin(this);
+
+    if (!Pikmin)
+    {
+        return;
+    }
+
+    FVector ThrowTarget = GetThrowAimPoint();
+    Pikmin->BeginThrow(ThrowTarget, this);
+}
+
+FVector APikminPlayerCharacter::GetThrowAimPoint() const
+{
+    const float ThrowDistance = 500.0f;
+
+    return GetActorLocation() + (GetActorForwardVector() * ThrowDistance);
+}

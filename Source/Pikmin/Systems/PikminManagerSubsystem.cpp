@@ -40,3 +40,28 @@ APikminCharacter* UPikminManagerSubsystem::SpawnPikmin(UObject* WorldContextObje
 
 	return Pikmin;
 }
+
+APikminCharacter* UPikminManagerSubsystem::GetNextThrowablePikmin(AActor* Player)
+{
+	APikminCharacter* Closest = nullptr;
+	float BestDistance = FLT_MAX;
+
+	for (APikminCharacter* Pikmin : PikminArmy)
+	{
+		if (!Pikmin || Pikmin->IsBusy() || Pikmin->GetState() != EPikminState::Following)
+		{
+			continue;
+		}
+
+		float Distance = FVector::Dist(Player->GetActorLocation(), Pikmin->GetActorLocation());
+
+
+		if (Distance < BestDistance)
+		{
+			BestDistance = Distance;
+			Closest = Pikmin;
+		}
+	}
+
+	return Closest;
+}
