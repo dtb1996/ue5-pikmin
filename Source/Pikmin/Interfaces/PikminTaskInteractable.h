@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "Systems/ItemTypes.h"
 #include "PikminTaskInteractable.generated.h"
 
 class APikminCharacter;
@@ -37,4 +38,12 @@ public:
 	/** Used to compute best distance/priority */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Pikmin Task")
 	FVector GetTaskLocation() const;
+	
+	/** When a task is completed */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Pikmin Task")
+	void HandleTaskCompleted();
+
+	/** Get the item type for this object */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Pikmin Task")
+	EItemType GetItemType() const;
 };

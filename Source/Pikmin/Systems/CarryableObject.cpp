@@ -89,7 +89,7 @@ FVector ACarryableObject::GetTaskLocation_Implementation() const
 	return GetActorLocation();
 }
 
-void ACarryableObject::HandleDelivered()
+void ACarryableObject::HandleTaskCompleted_Implementation()
 {
 	if (bAutoRegisterToSubsystem)
 	{
@@ -118,6 +118,11 @@ void ACarryableObject::HandleDelivered()
 	}
 
 	Destroy();
+}
+
+EItemType ACarryableObject::GetItemType_Implementation() const
+{
+	return ItemType;
 }
 
 // -------- Pikmin Arrange Logic --------

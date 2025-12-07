@@ -31,9 +31,8 @@ public:
 	virtual void AssignPikmin_Implementation(APikminCharacter* Pikmin) override;
 	virtual void UnassignPikmin_Implementation(APikminCharacter* Pikmin) override;
 	virtual FVector GetTaskLocation_Implementation() const override;
-
-	UFUNCTION(BlueprintCallable)
-	void HandleDelivered();
+	virtual void HandleTaskCompleted_Implementation() override;
+	virtual EItemType GetItemType_Implementation() const override;
 
 protected:
 	/** Returns a snap position in the ring */

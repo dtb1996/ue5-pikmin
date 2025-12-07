@@ -19,7 +19,6 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UPROPERTY(EditAnywhere, Category = "Task")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Task")
 	EItemType ItemTypeToDeliver;
-
 };
