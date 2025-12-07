@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "PikminState.h"
-#include "Systems/PikminTaskSubsystem.h"
+//#include "Systems/PikminTaskSubsystem.h"
 #include "Interfaces/PikminTaskInteractable.h"
 #include "PikminAIController.generated.h"
 
@@ -25,43 +25,56 @@ public:
     virtual void Tick(float DeltaTime) override;
     virtual void OnPossess(APawn* InPawn) override;
 
+    // State management
     void SetState(EPikminState NewState);
     EPikminState GetState() const { return CurrentState; };
 
-    void SetLeaderFollowTarget(USceneComponent* NewTarget);
-
+    // High-level requests
     void RequestFollow(AActor* Caller);
     void RequestIdle();
 
+    // Called when thrown finishes
     void OnThrownLanded();
 
+    // Called by Pikmin character to notify task completion/detach
     void HandleTaskComplete();
 
+    // Query
     bool IsBusy() const;
 
-private:
-    void UpdateState(float DeltaTime);
+    // Task assignment helpers
+    void AssignToTask(TScriptInterface<IPikminTaskInteractable> NewTask);
+    void ClearActiveTask();
 
-    void IdleState(float DeltaTime);
-    void FollowState(float DeltaTime);
-    void ThrownState(float DeltaTime);
-    void WorkingState(float DeltaTime);
+    TScriptInterface<IPikminTaskInteractable> GetActiveTask() const { return ActiveTask; };
 
-    void TryFindTask();
-
-    EPikminState CurrentState = EPikminState::Idle;
-
-    APikminCharacter* ControlledPikmin;
-
-    TScriptInterface<IPikminTaskInteractable> ActiveTask;
-
-    float TimeSinceLastScan = 0.0f;
-    float ScanCooldown = 0.5f;
+    // Expose controlled pawn safely
+    APikminCharacter* GetControlledPikmin() const { return ControlledPikmin; }
 
 protected:
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-    USceneComponent* FollowTarget;
+    // State handlers
+    void UpdateState(float DeltaTime);
 
+private:
+    // States
+    EPikminState CurrentState = EPikminState::Idle;
+
+    // Pointer to character
+    APikminCharacter* ControlledPikmin = nullptr;
+
+    // Current task object (if any)
+    TScriptInterface<IPikminTaskInteractable> ActiveTask;
+
+public:
+    // Search radius for local tasks
     UPROPERTY(EditAnywhere, Category = "Tasks")
     float TaskSearchRadius = 300.0f;
+
+    // Task scanning
+    float TimeSinceLastScan = 0.0f;
+    float ScanCooldown = 0.5f;
+    
+    // Follow target
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    USceneComponent* FollowTarget;
 };

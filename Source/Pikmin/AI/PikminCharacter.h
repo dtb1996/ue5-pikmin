@@ -8,6 +8,32 @@
 #include "PikminState.h"
 #include "PikminCharacter.generated.h"
 
+USTRUCT()
+struct FThrowMotion
+{
+    GENERATED_BODY()
+
+    UPROPERTY()
+    bool bActive = false;
+
+    UPROPERTY()
+    FVector Start = FVector::ZeroVector;
+
+    UPROPERTY()
+    FVector End = FVector::ZeroVector;
+
+    UPROPERTY()
+    float Time = 0.0f;
+
+    UPROPERTY()
+    float Duration = 0.6f;
+
+    UPROPERTY()
+    float Height = 350.0f;
+
+    void Reset() { bActive = false; Time = 0.0f; }
+};
+
 UCLASS()
 class APikminCharacter : public ACharacter, public IPikminSelectable
 {
@@ -18,32 +44,41 @@ public:
 
     virtual void Tick(float DeltaTime) override;
 
+    // Interface functions
     virtual void OnWhistleSelect_Implementation(AActor* Caller) override;
-
     virtual void OnWhistleDeselect_Implementation(AActor* Caller) override;
 
-    bool IsBusy() const;
+    // High-level actions the controller calls
+    void RequestMoveTo(const FVector& Location, float AcceptanceRadius = 50.0f);
+    void RequestStop();
+    void AttachToTaskActor(AActor* TaskActor, const FVector& WorldAttachLocation);
+    void DetachFromTaskActor();
 
+    // Throw helpers
+    void BeginThrowTo(const FVector& Target, float Duration = 0.6f, float Height = 350.0f);
+    bool IsThrown() const { return ThrowMotion.bActive; }
+
+    // Queries
+    bool IsBusy() const;
     EPikminState GetState() const;
 
-    void BeginThrow(const FVector& Target, AActor* Thrower);
-
-    // Thrown state variables
-    UPROPERTY(EditAnywhere, Category = "Throw")
-    float ThrowHeight = 350.f;
-
-    UPROPERTY(EditAnywhere, Category = "Throw")
-    float GravityScale = 1.0f;
-
-    bool bIsThrown = false;
-    FVector ThrowStart;
-    FVector ThrowEnd;
-    float ThrowTime;
-    float ThrowDuration = 0.6f;
+    // Called by carryable object when task completes
+    void OnTaskCompleted();
 
 protected:
-    void OnThrowLanded();
+    // Called internally when throw finishes
+    void OnThrowFinish();
+
+    // Encapsulated throw state
+    UPROPERTY(VisibleAnywhere, Category = "Throw")
+    FThrowMotion ThrowMotion;
+
+    // Track current assigned task actor (weak)
+    UPROPERTY()
+    TWeakObjectPtr<AActor> CurrentTaskActor;
 
 public:
-    void OnTaskCompleted();
+    // Animation / gameplay tuning
+    UPROPERTY(EditAnywhere, Category = "Movement")
+    float MoveAcceptanceRadius = 50.0f;
 };

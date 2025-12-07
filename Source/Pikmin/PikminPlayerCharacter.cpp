@@ -12,6 +12,7 @@
 #include "AI/PikminState.h"
 #include "AI/PikminAIController.h"
 #include "Systems/PikminWhistleComponent.h"
+#include "Systems/PikminSelectable.h"
 
 APikminPlayerCharacter::APikminPlayerCharacter()
 {
@@ -96,8 +97,7 @@ void APikminPlayerCharacter::CommandFollow()
         // Get AI controller and tell it to start following
         if (APikminAIController* AICon = Cast<APikminAIController>(Pikmin->GetController()))
         {
-            AICon->SetLeaderFollowTarget(FollowLocationComponent);
-            AICon->SetState(EPikminState::Following);
+            AICon->RequestFollow(this);
         }
     }
 }
@@ -116,8 +116,7 @@ void APikminPlayerCharacter::CommandDismiss()
         // Get AI controller and tell it to start following
         if (APikminAIController* AICon = Cast<APikminAIController>(Pikmin->GetController()))
         {
-            AICon->SetLeaderFollowTarget(nullptr);
-            AICon->SetState(EPikminState::Idle);
+            AICon->RequestIdle();
         }
     }
 }
@@ -133,7 +132,7 @@ void APikminPlayerCharacter::CommandThrow()
     }
 
     FVector ThrowTarget = GetThrowAimPoint();
-    Pikmin->BeginThrow(ThrowTarget, this);
+    Pikmin->BeginThrowTo(ThrowTarget);
 }
 
 FVector APikminPlayerCharacter::GetThrowAimPoint() const
