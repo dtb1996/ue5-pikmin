@@ -35,6 +35,8 @@ public:
 
     void OnThrownLanded();
 
+    void HandleTaskComplete();
+
     bool IsBusy() const;
 
 private:
@@ -61,5 +63,5 @@ protected:
     USceneComponent* FollowTarget;
 
     UPROPERTY(EditAnywhere, Category = "Tasks")
-    float TaskSearchRadius = 300.f;
+    float TaskSearchRadius = 300.0f;
 };

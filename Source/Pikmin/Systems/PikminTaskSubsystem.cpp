@@ -2,6 +2,7 @@
 
 
 #include "PikminTaskSubsystem.h"
+#include "CarryableObject.h"
 
 TScriptInterface<IPikminTaskInteractable> UPikminTaskSubsystem::GetNearestAvailableTask(const FVector& Location)
 {
@@ -25,4 +26,35 @@ TScriptInterface<IPikminTaskInteractable> UPikminTaskSubsystem::GetNearestAvaila
 	}
 
 	return BestTask;
+}
+
+void UPikminTaskSubsystem::RegisterDropOff(EItemType Type, AActor* DropOff)
+{
+	DropOffLocations.Add(Type, DropOff);
+
+	// Assign to any pending objects
+	if (PendingAssignments.Contains(Type))
+	{
+		FCarryableObjectArrayWrapper& Pending = PendingAssignments[Type];
+
+		for (auto CarryObject : Pending.CarryableObjects)
+		{
+			if (CarryObject.IsValid())
+			{
+				CarryObject->SetDeliveryTarget(DropOff);
+			}
+		}
+	}
+}
+
+void UPikminTaskSubsystem::RequestDropOff(EItemType Type, ACarryableObject* CarryObject)
+{
+	if (DropOffLocations.Contains(Type))
+	{
+		CarryObject->SetDeliveryTarget(DropOffLocations[Type]);
+	}
+	else
+	{
+		PendingAssignments.FindOrAdd(Type).CarryableObjects.Add(CarryObject);
+	}
 }

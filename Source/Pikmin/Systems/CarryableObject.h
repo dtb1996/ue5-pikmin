@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/PikminTaskInteractable.h"
+#include "ItemTypes.h"
 #include "CarryableObject.generated.h"
 
 class APikminCharacter;
@@ -20,6 +21,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 public:	
 	virtual void Tick(float DeltaTime) override;
 
@@ -28,6 +31,9 @@ public:
 	virtual void AssignPikmin_Implementation(APikminCharacter* Pikmin) override;
 	virtual void UnassignPikmin_Implementation(APikminCharacter* Pikmin) override;
 	virtual FVector GetTaskLocation_Implementation() const override;
+
+	UFUNCTION(BlueprintCallable)
+	void HandleDelivered();
 
 protected:
 	/** Returns a snap position in the ring */
@@ -41,6 +47,9 @@ protected:
 
 private:
 	// ---- Task Settings ----
+	UPROPERTY(EditAnywhere, Category = "Task")
+	EItemType ItemType;
+
 	UPROPERTY(EditAnywhere, Category = "Task")
 	int RequiredPikmin = 3;
 
@@ -56,13 +65,16 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Task")
 	bool bAutoRegisterToSubsystem = true;
 
-	// Target (temp: player)
+	// Target
 	UPROPERTY()
-	AActor* TargetActor;
+	AActor* DeliveryTarget;
 
 	// ---- State ----
 	UPROPERTY(VisibleAnywhere)
 	TArray<TWeakObjectPtr<APikminCharacter>> AssignedPikmin;
 
 	bool bIsMoving = false;
+
+public:
+	void SetDeliveryTarget(AActor* Target) { DeliveryTarget = Target; };
 };

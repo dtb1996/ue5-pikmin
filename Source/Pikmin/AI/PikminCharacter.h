@@ -43,4 +43,7 @@ public:
 
 protected:
     void OnThrowLanded();
+
+public:
+    void OnTaskCompleted();
 };

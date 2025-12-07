@@ -77,6 +77,13 @@ void APikminAIController::OnThrownLanded()
     TryFindTask();
 }
 
+void APikminAIController::HandleTaskComplete()
+{
+    ActiveTask = nullptr;
+
+    CurrentState = EPikminState::Idle;
+}
+
 void APikminAIController::UpdateState(float DeltaTime)
 {
     switch (CurrentState)

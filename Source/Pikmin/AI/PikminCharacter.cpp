@@ -106,9 +106,17 @@ void APikminCharacter::OnThrowLanded()
 	// Re-enable movement
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 
-	// Tell AI it’s free again
+	// Tell AI controller it’s free again
 	if (APikminAIController* AI = Cast<APikminAIController>(GetController()))
 	{
 		AI->OnThrownLanded();
+	}
+}
+
+void APikminCharacter::OnTaskCompleted()
+{
+	if (APikminAIController* AI = Cast<APikminAIController>(GetController()))
+	{
+		AI->HandleTaskComplete();
 	}
 }

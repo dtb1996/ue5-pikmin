@@ -18,13 +18,27 @@ void ACarryableObject::BeginPlay()
 	
 	if (bAutoRegisterToSubsystem)
 	{
-		if (auto Subsystem = GetGameInstance()->GetSubsystem<UPikminTaskSubsystem>())
+		if (auto TaskSubsystem = GetGameInstance()->GetSubsystem<UPikminTaskSubsystem>())
 		{
-			Subsystem->RegisterTask(this);
+			TaskSubsystem->RegisterTask(this);
+			TaskSubsystem->RequestDropOff(ItemType, this);
 		}
 	}
 
-	TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	//DeliveryTarget = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+}
+
+void ACarryableObject::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	if (bAutoRegisterToSubsystem)
+	{
+		if (auto TaskSubsystem = GetGameInstance()->GetSubsystem<UPikminTaskSubsystem>())
+		{
+			TaskSubsystem->UnregisterTask(this);
+		}
+	}
 }
 
 void ACarryableObject::Tick(float DeltaTime)
@@ -50,7 +64,7 @@ void ACarryableObject::AssignPikmin_Implementation(APikminCharacter* Pikmin)
 	}
 
 	AssignedPikmin.Add(Pikmin);
-	UpdatePikminPositions();
+	//UpdatePikminPositions();
 
 	// Check if we can start movement
 	if (!bIsMoving && AssignedPikmin.Num() >= RequiredPikmin)
@@ -62,7 +76,7 @@ void ACarryableObject::AssignPikmin_Implementation(APikminCharacter* Pikmin)
 void ACarryableObject::UnassignPikmin_Implementation(APikminCharacter* Pikmin)
 {
 	AssignedPikmin.Remove(Pikmin);
-	UpdatePikminPositions();
+	//UpdatePikminPositions();
 
 	if (AssignedPikmin.Num() < RequiredPikmin)
 	{
@@ -73,6 +87,37 @@ void ACarryableObject::UnassignPikmin_Implementation(APikminCharacter* Pikmin)
 FVector ACarryableObject::GetTaskLocation_Implementation() const
 {
 	return GetActorLocation();
+}
+
+void ACarryableObject::HandleDelivered()
+{
+	if (bAutoRegisterToSubsystem)
+	{
+		if (auto TaskSubsystem = GetGameInstance()->GetSubsystem<UPikminTaskSubsystem>())
+		{
+			TaskSubsystem->UnregisterTask(this);
+		}
+	}
+
+	// Copy the array to safely iterate
+	TArray<TWeakObjectPtr<APikminCharacter>> PikminCopy = AssignedPikmin;
+
+	for (auto& PikminPtr : PikminCopy)
+	{
+		if (!PikminPtr.IsValid())
+		{
+			continue;
+		}
+
+		APikminCharacter* Pikmin = PikminPtr.Get();
+
+		// Remove from the original array
+		IPikminTaskInteractable::Execute_UnassignPikmin(this, Pikmin);
+
+		Pikmin->OnTaskCompleted();
+	}
+
+	Destroy();
 }
 
 // -------- Pikmin Arrange Logic --------
@@ -135,16 +180,24 @@ void ACarryableObject::UpdatePikminPositions()
 
 void ACarryableObject::UpdateMovement(float DeltaTime)
 {
-	if (!bIsMoving || !TargetActor)
+	if (!bIsMoving || !DeliveryTarget)
 	{
 		return;
 	}
 
-	float Ratio = (float)AssignedPikmin.Num() / (float)MaxPikmin;
-	float CurrentMoveSpeed = BaseMoveSpeed * Ratio;
+	float SpeedMultiplier = (float)AssignedPikmin.Num() / MaxPikmin;
+	float MoveSpeed = BaseMoveSpeed * FMath::Max(0.2f, SpeedMultiplier);
 
-	FVector Direction = (TargetActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-	FVector NewLocation = GetActorLocation() + (Direction * CurrentMoveSpeed * DeltaTime);
+	FVector Direction = (DeliveryTarget->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+	SetActorLocation(GetActorLocation() + Direction * MoveSpeed * DeltaTime);
 
-	SetActorLocation(NewLocation, true);
+	float Distance = FVector::Dist2D(GetActorLocation(), DeliveryTarget->GetActorLocation());
+
+	if (Distance < 100.f)
+	{
+		// Arrived at zone
+		bIsMoving = false;
+
+		// TODO: trigger scoring, destroy, spawn seeds, etc
+	}
 }
