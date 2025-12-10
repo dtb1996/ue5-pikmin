@@ -29,11 +29,11 @@ public:
 
     /** Top-down style camera */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-    USceneComponent* FollowLocationComponent;
+    UCameraComponent* Camera;
     
     /** Pikmin follow target */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-    UCameraComponent* Camera;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pikmin", meta = (AllowPrivateAccess = "true"))
+    USceneComponent* FollowLocationComponent;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     UPikminWhistleComponent* WhistleComponent;
