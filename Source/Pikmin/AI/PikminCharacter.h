@@ -63,6 +63,7 @@ public:
     EPikminState GetState() const;
 
     // Called by carryable object when task completes
+    UFUNCTION(BlueprintCallable)
     void OnTaskCompleted();
 
 protected:

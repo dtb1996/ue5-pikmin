@@ -1,15 +1,27 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "CarryableObject.h"
+#include "CarryableAIController.h"
 #include "AI/PikminCharacter.h"
 #include "AI/PikminAIController.h"
 #include "Systems/PikminTaskSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 
 ACarryableObject::ACarryableObject()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	// Character Movement
+	GetCharacterMovement()->MaxWalkSpeed = BaseMoveSpeed;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 360.0f, 0.0f);
+
+	// AI Controller
+	AIControllerClass = ACarryableAIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void ACarryableObject::BeginPlay()
@@ -24,8 +36,6 @@ void ACarryableObject::BeginPlay()
 			TaskSubsystem->RequestDropOff(ItemType, this);
 		}
 	}
-
-	//DeliveryTarget = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 }
 
 void ACarryableObject::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -46,7 +56,6 @@ void ACarryableObject::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UpdatePikminPositions();
-	UpdateMovement(DeltaTime);
 }
 
 // -------- Interface Logic --------
@@ -64,23 +73,35 @@ void ACarryableObject::AssignPikmin_Implementation(APikminCharacter* Pikmin)
 	}
 
 	AssignedPikmin.Add(Pikmin);
-	//UpdatePikminPositions();
+	
+	UpdateMovement();
 
 	// Check if we can start movement
 	if (!bIsMoving && AssignedPikmin.Num() >= RequiredPikmin)
 	{
 		bIsMoving = true;
+
+		if (ACarryableAIController* AI = Cast<ACarryableAIController>(GetController()))
+		{
+			AI->SetMoveTarget(DeliveryTarget);
+		}
 	}
 }
 
 void ACarryableObject::UnassignPikmin_Implementation(APikminCharacter* Pikmin)
 {
 	AssignedPikmin.Remove(Pikmin);
-	//UpdatePikminPositions();
+	
+	UpdateMovement();
 
 	if (AssignedPikmin.Num() < RequiredPikmin)
 	{
 		bIsMoving = false;
+
+		if (ACarryableAIController* AI = Cast<ACarryableAIController>(GetController()))
+		{
+			AI->StopMovement();
+		}
 	}
 }
 
@@ -168,11 +189,11 @@ void ACarryableObject::UpdatePikminPositions()
 		else
 		{
 			// Move AI toward the attach point
-			AI->MoveToLocation(SnapPosition, 15.f);
+			AI->MoveToLocation(SnapPosition, 15.0f);
 
 			// Check if we are close enough to start carrying behavior
 			float Dist = FVector::Dist2D(SnapPosition, Pikmin->GetActorLocation());
-			if (Dist <= 20.f)
+			if (Dist <= 20.0f)
 			{
 				AI->SetState(EPikminState::Working);
 				Pikmin->SetActorLocation(SnapPosition);
@@ -183,26 +204,15 @@ void ACarryableObject::UpdatePikminPositions()
 
 // -------- Movement --------
 
-void ACarryableObject::UpdateMovement(float DeltaTime)
+void ACarryableObject::UpdateMovement()
 {
-	if (!bIsMoving || !DeliveryTarget)
+	//if (!bIsMoving)
+	//	return;
+
+	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+	if (MovementComponent)
 	{
-		return;
-	}
-
-	float SpeedMultiplier = (float)AssignedPikmin.Num() / MaxPikmin;
-	float MoveSpeed = BaseMoveSpeed * FMath::Max(0.2f, SpeedMultiplier);
-
-	FVector Direction = (DeliveryTarget->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-	SetActorLocation(GetActorLocation() + Direction * MoveSpeed * DeltaTime);
-
-	float Distance = FVector::Dist2D(GetActorLocation(), DeliveryTarget->GetActorLocation());
-
-	if (Distance < 100.f)
-	{
-		// Arrived at zone
-		bIsMoving = false;
-
-		// TODO: trigger scoring, destroy, spawn seeds, etc
+		float SpeedMultiplier = FMath::Clamp((float)AssignedPikmin.Num() / MaxPikmin, 0.3f, 1.0f);
+		MovementComponent->MaxWalkSpeed = BaseMoveSpeed * SpeedMultiplier;
 	}
 }

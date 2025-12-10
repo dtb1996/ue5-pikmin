@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Character.h"
 #include "Interfaces/PikminTaskInteractable.h"
 #include "ItemTypes.h"
 #include "CarryableObject.generated.h"
@@ -11,7 +11,7 @@
 class APikminCharacter;
 
 UCLASS()
-class PIKMIN_API ACarryableObject : public AActor, public IPikminTaskInteractable
+class PIKMIN_API ACarryableObject : public ACharacter, public IPikminTaskInteractable
 {
 	GENERATED_BODY()
 	
@@ -41,8 +41,8 @@ protected:
 	/** Updates transform of assigned pikmin */
 	void UpdatePikminPositions();
 
-	/** Moves this object once enough pikmin are attached */
-	void UpdateMovement(float DeltaTime);
+	/** Set the movement speed based on the current number of attached Pikmin */
+	void UpdateMovement();
 
 private:
 	// ---- Task Settings ----

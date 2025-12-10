@@ -3,7 +3,7 @@
 #include "PikminCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "PikminAIController.h"
-//#include "Components/CapsuleComponent.h"
+#include "Components/CapsuleComponent.h"
 
 APikminCharacter::APikminCharacter()
 {
@@ -92,6 +92,8 @@ void APikminCharacter::AttachToTaskActor(AActor* TaskActor, const FVector& World
 	GetCharacterMovement()->DisableMovement();
 	SetActorLocation(WorldAttachLocation);
 	AttachToActor(TaskActor, FAttachmentTransformRules::KeepWorldTransform);
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void APikminCharacter::DetachFromTaskActor()
