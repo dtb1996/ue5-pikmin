@@ -33,6 +33,7 @@ public:
 	virtual FVector GetTaskLocation_Implementation() const override;
 	virtual void HandleTaskCompleted_Implementation() override;
 	virtual EItemType GetItemType_Implementation() const override;
+	virtual int32 GetPikminYield_Implementation() const override;
 
 protected:
 	/** Returns a snap position in the ring */
@@ -48,6 +49,9 @@ private:
 	// ---- Task Settings ----
 	UPROPERTY(EditAnywhere, Category = "Task")
 	EItemType ItemType;
+
+	UPROPERTY(EditAnywhere, Category = "Task|Onion")
+	int32 PikminYield = 0;
 
 	UPROPERTY(EditAnywhere, Category = "Task")
 	int RequiredPikmin = 3;

@@ -146,6 +146,11 @@ EItemType ACarryableObject::GetItemType_Implementation() const
 	return ItemType;
 }
 
+int32 ACarryableObject::GetPikminYield_Implementation() const
+{
+	return PikminYield;
+}
+
 // -------- Pikmin Arrange Logic --------
 
 FVector ACarryableObject::GetPikminAttachPoint(int32 Index) const

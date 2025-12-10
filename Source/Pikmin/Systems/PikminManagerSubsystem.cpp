@@ -18,6 +18,11 @@ void UPikminManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	}
 }
 
+int32 UPikminManagerSubsystem::GetFreePikminSlots() const
+{
+	return FMath::Max(0, MaxPikminInWorld - PikminArray.Num());
+}
+
 APikminCharacter* UPikminManagerSubsystem::SpawnPikmin(UObject* WorldContextObject, const FVector& Location)
 {
 	if (!PikminClass || !WorldContextObject)
@@ -35,7 +40,7 @@ APikminCharacter* UPikminManagerSubsystem::SpawnPikmin(UObject* WorldContextObje
 
 	if (Pikmin)
 	{
-		PikminArmy.Add(Pikmin);
+		PikminArray.Add(Pikmin);
 	}
 
 	return Pikmin;
@@ -46,7 +51,7 @@ APikminCharacter* UPikminManagerSubsystem::GetNextThrowablePikmin(AActor* Player
 	APikminCharacter* Closest = nullptr;
 	float BestDistance = FLT_MAX;
 
-	for (APikminCharacter* Pikmin : PikminArmy)
+	for (APikminCharacter* Pikmin : PikminArray)
 	{
 		if (!Pikmin || Pikmin->IsBusy() || Pikmin->GetState() != EPikminState::Following)
 		{

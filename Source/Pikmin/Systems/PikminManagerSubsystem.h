@@ -19,18 +19,25 @@ class PIKMIN_API UPikminManagerSubsystem : public UGameInstanceSubsystem
 public:
     virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
+    UPROPERTY(EditAnywhere, Category = "Pikmin")
+    int32 MaxPikminInWorld = 100;
+
     UFUNCTION(BlueprintCallable)
     APikminCharacter* SpawnPikmin(UObject* WorldContextObject, const FVector& Location);
 
     UFUNCTION(BlueprintCallable)
-    const TArray<APikminCharacter*>& GetPikmin() const { return PikminArmy; }
+    const TArray<APikminCharacter*>& GetPikmin() const { return PikminArray; }
+
+    int32 GetCurrentPikminCount() const { return PikminArray.Num(); }
+
+    int32 GetFreePikminSlots() const;
 
     UFUNCTION(BlueprintCallable)
     APikminCharacter* GetNextThrowablePikmin(AActor* Player);
 
 private:
     UPROPERTY()
-    TArray<APikminCharacter*> PikminArmy;
+    TArray<APikminCharacter*> PikminArray;
 
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<APikminCharacter> PikminClass;

@@ -46,4 +46,8 @@ public:
 	/** Get the item type for this object */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Pikmin Task")
 	EItemType GetItemType() const;
+
+	/** Get Pikmin yield for this object */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Pikmin Task")
+	int32 GetPikminYield() const;
 };
