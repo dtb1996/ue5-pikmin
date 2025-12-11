@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Systems/PikminSelectable.h"
 #include "PikminState.h"
+#include "Systems/PikminTypes.h"
 #include "PikminCharacter.generated.h"
 
 USTRUCT()
@@ -82,4 +83,7 @@ public:
     // Animation / gameplay tuning
     UPROPERTY(EditAnywhere, Category = "Movement")
     float MoveAcceptanceRadius = 50.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    EPikminType PikminType = EPikminType::Red;
 };

@@ -10,6 +10,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class ACameraRig;
 class UPikminWhistleComponent;
+class UPikminInteractionComponent;
 
 UCLASS(abstract)
 class APikminPlayerCharacter : public ACharacter
@@ -35,8 +36,11 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pikmin", meta = (AllowPrivateAccess = "true"))
     USceneComponent* FollowLocationComponent;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pikmin")
     UPikminWhistleComponent* WhistleComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction")
+    UPikminInteractionComponent* InteractionComponent;
 
 public:
     /** Spawn or attach a camera rig to this pawn (optional helper) */
@@ -53,6 +57,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Gameplay")
     void CommandThrow();
+
+    UFUNCTION(BlueprintCallable, Category = "Gameplay")
+    void TryPluck();
 
 protected:   
     /** Camera rig class to spawn */

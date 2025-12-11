@@ -9,10 +9,9 @@
 #include "Camera/CameraComponent.h"
 #include "Systems/PikminManagerSubsystem.h"
 #include "AI/PikminCharacter.h"
-#include "AI/PikminState.h"
 #include "AI/PikminAIController.h"
 #include "Systems/PikminWhistleComponent.h"
-#include "Systems/PikminSelectable.h"
+#include "Systems/PikminInteractionComponent.h"
 
 APikminPlayerCharacter::APikminPlayerCharacter()
 {
@@ -43,6 +42,9 @@ APikminPlayerCharacter::APikminPlayerCharacter()
 
     // Whistle component
     WhistleComponent = CreateDefaultSubobject<UPikminWhistleComponent>(TEXT("WhistleComponent"));
+
+    // Interaction component
+    InteractionComponent = CreateDefaultSubobject<UPikminInteractionComponent>(TEXT("InteractionComponent"));
 }
 
 void APikminPlayerCharacter::BeginPlay()
@@ -123,6 +125,14 @@ void APikminPlayerCharacter::CommandDismiss()
 
 void APikminPlayerCharacter::CommandThrow()
 {
+    // If pluckable sprout in range then pluck instead of throwing
+    if (InteractionComponent && InteractionComponent->GetCurrentSelectable() != nullptr)
+    {
+        TryPluck();
+        return;
+    }
+
+    // Throw Pikmin
     UPikminManagerSubsystem* PikminManager = GetGameInstance()->GetSubsystem<UPikminManagerSubsystem>();
     APikminCharacter* Pikmin = PikminManager->GetNextThrowablePikmin(this);
 
@@ -133,6 +143,11 @@ void APikminPlayerCharacter::CommandThrow()
 
     FVector ThrowTarget = GetThrowAimPoint();
     Pikmin->BeginThrowTo(ThrowTarget);
+}
+
+void APikminPlayerCharacter::TryPluck()
+{
+    InteractionComponent->TryPluck();
 }
 
 FVector APikminPlayerCharacter::GetThrowAimPoint() const

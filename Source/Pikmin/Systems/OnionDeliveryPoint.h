@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Systems/DeliveryPoint.h"
+#include "PikminTypes.h"
 #include "OnionDeliveryPoint.generated.h"
 
 /**
@@ -17,10 +18,10 @@ class PIKMIN_API AOnionDeliveryPoint : public ADeliveryPoint
 public:
 	AOnionDeliveryPoint();
 
-protected:
-	virtual void BeginPlay() override;
+    // Type of Pikmin associated with this onion
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Onion")
+    EPikminType PikminType = EPikminType::Red;
 
-public:
     // Stored Pikmin waiting to be spawned later
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Onion")
     int32 StoredPikmin = 0;

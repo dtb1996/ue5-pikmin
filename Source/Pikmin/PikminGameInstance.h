@@ -7,6 +7,7 @@
 #include "PikminGameInstance.generated.h"
 
 class APikminCharacter;
+class APikminSprout;
 
 /**
  * 
@@ -19,5 +20,8 @@ class PIKMIN_API UPikminGameInstance : public UGameInstance
 public:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<APikminCharacter> DefaultPikminClass;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<APikminSprout> DefaultSproutClass;
 	
 };

@@ -10,13 +10,6 @@ AOnionDeliveryPoint::AOnionDeliveryPoint()
 	ItemTypeToDeliver = EItemType::FoodRed;
 }
 
-void AOnionDeliveryPoint::BeginPlay()
-{
-	Super::BeginPlay();
-
-
-}
-
 void AOnionDeliveryPoint::HandleItemDelivered(EItemType ItemType, int32 PikminYield)
 {
 	if (ItemType != ItemTypeToDeliver)
@@ -32,17 +25,16 @@ void AOnionDeliveryPoint::HandleItemDelivered(EItemType ItemType, int32 PikminYi
 		return;
 	}
 
-	int32 CurrentFieldCount = Manager->GetPikmin().Num();
-
-	int32 FreeSlots = Manager->GetFreePikminSlots();
+	int32 CurrentFieldCount = Manager->GetTotalCreatureCount();
+	int32 FreeSlots = Manager->GetFreeSlots();
 	int32 ToSpawn = FMath::Min(FreeSlots, Yield);
 	int32 ToStore = Yield - ToSpawn;
 
-	// Spawn Pikmin into world
+	// Spawn Pikmin sprouts into world
 	for (int i = 0; i < ToSpawn; i++)
 	{
 		FVector SpawnLocation = GetActorLocation() + FVector(0, 0, 100);
-		Manager->SpawnPikmin(this, SpawnLocation);
+		Manager->SpawnSprout(this, SpawnLocation, PikminType);
 	}
 
 	// Store overflow Pikmin
@@ -60,13 +52,13 @@ void AOnionDeliveryPoint::ReleaseStoredPikmin(int32 NumRequested)
 		return;
 	}
 
-	int32 CurrentFieldCount = Manager->GetPikmin().Num();
-	int32 FreeSlots = Manager->GetFreePikminSlots();
+	int32 CurrentFieldCount = Manager->GetTotalCreatureCount();
+	int32 FreeSlots = Manager->GetFreeSlots();
 	int32 ToSpawn = FMath::Min(FreeSlots, StoredPikmin);
 
 	for (int i = 0; i < ToSpawn; i++)
 	{
-		Manager->SpawnPikmin(this, GetActorLocation() + FVector(0, 0, 100));
+		Manager->SpawnPikmin(this, GetActorLocation() + FVector(0, 0, 100), PikminType);
 	}
 
 	StoredPikmin -= ToSpawn;

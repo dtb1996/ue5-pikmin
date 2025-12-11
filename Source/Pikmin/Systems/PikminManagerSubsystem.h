@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
+#include "PikminTypes.h"
 #include "PikminManagerSubsystem.generated.h"
 
 class APikminCharacter;
+class APikminSprout;
 
 /**
  * 
@@ -19,26 +21,42 @@ class PIKMIN_API UPikminManagerSubsystem : public UGameInstanceSubsystem
 public:
     virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
+    // Max Pikmin + Sprouts simultaneously in the world
     UPROPERTY(EditAnywhere, Category = "Pikmin")
     int32 MaxPikminInWorld = 100;
 
+    // --- Spawn Functions ---
     UFUNCTION(BlueprintCallable)
-    APikminCharacter* SpawnPikmin(UObject* WorldContextObject, const FVector& Location);
+    APikminCharacter* SpawnPikmin(UObject* WorldContextObject, const FVector& Location, EPikminType PikminType, bool bIsSpawningFromSprout = false);
 
+    UFUNCTION(BlueprintCallable)
+    APikminSprout* SpawnSprout(UObject* WorldContextObject, const FVector& Location, EPikminType PikminType);
+
+    // --- Array getters ---
     UFUNCTION(BlueprintCallable)
     const TArray<APikminCharacter*>& GetPikmin() const { return PikminArray; }
+    const TArray<APikminSprout*>& GetSprouts() const { return SproutArray; }
 
+    // --- Counts ---
     int32 GetCurrentPikminCount() const { return PikminArray.Num(); }
+    int32 GetCurrentSproutCount() const { return SproutArray.Num(); }
 
-    int32 GetFreePikminSlots() const;
+    int32 GetTotalCreatureCount() const { return PikminArray.Num() + SproutArray.Num(); };
 
+    int32 GetFreeSlots() const;
+
+    // --- Utility ---
     UFUNCTION(BlueprintCallable)
     APikminCharacter* GetNextThrowablePikmin(AActor* Player);
 
 private:
-    UPROPERTY()
+    //UPROPERTY()
     TArray<APikminCharacter*> PikminArray;
+    TArray<APikminSprout*> SproutArray;
 
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<APikminCharacter> PikminClass;
+
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<APikminSprout> SproutClass;
 };
