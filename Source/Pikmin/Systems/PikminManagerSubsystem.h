@@ -41,6 +41,7 @@ public:
     int32 GetCurrentPikminCount() const { return PikminArray.Num(); }
     int32 GetCurrentSproutCount() const { return SproutArray.Num(); }
 
+    UFUNCTION(BlueprintCallable)
     int32 GetTotalCreatureCount() const { return PikminArray.Num() + SproutArray.Num(); };
 
     int32 GetFreeSlots() const;

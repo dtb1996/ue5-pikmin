@@ -63,13 +63,60 @@ void UPikminInteractionComponent::OnSelectableBecamePluckable(AActor* Selectable
     // Only update if the sphere currently overlaps the sprout
     if (InteractionSphere->IsOverlappingActor(Selectable))
     {
-        if (Selectable->GetClass()->ImplementsInterface(UPikminSelectable::StaticClass()) &&
-            IPikminSelectable::Execute_IsPluckable(Selectable, OwnerPlayer))
+        OverlappingSelectables.Add(Selectable);
+        UpdateBestSelectable();
+    }
+}
+
+void UPikminInteractionComponent::UpdateBestSelectable()
+{
+    AActor* NewBest = GetBestSelectable();
+
+    if (NewBest != CurrentSelectable)
+    {
+        CurrentSelectable = NewBest;
+
+        if (CurrentSelectable)
         {
-            CurrentSelectable = Selectable;
             // UpdateInteractionUI(true);
         }
+        else
+        {
+            // UpdateInteractionUI(false);
+        }
     }
+}
+
+AActor* UPikminInteractionComponent::GetBestSelectable() const
+{
+    if (OverlappingSelectables.Num() == 0)
+    {
+        return nullptr;
+    }
+
+    AActor* Best = nullptr;
+    float BestDistSq = FLT_MAX;
+
+    FVector PlayerLocation = OwnerPlayer->GetActorLocation();
+
+    for (AActor* Candidate : OverlappingSelectables)
+    {
+        if (!Candidate)
+            continue;
+
+        if (!IPikminSelectable::Execute_IsPluckable(Candidate, OwnerPlayer))
+            continue;
+
+        float DistSq = FVector::DistSquared(PlayerLocation, Candidate->GetActorLocation());
+
+        if (DistSq < BestDistSq)
+        {
+            BestDistSq = DistSq;
+            Best = Candidate;
+        }
+    }
+
+    return Best;
 }
 
 void UPikminInteractionComponent::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -83,17 +130,21 @@ void UPikminInteractionComponent::OnSphereOverlapBegin(UPrimitiveComponent* Over
     {
         if (IPikminSelectable::Execute_IsPluckable(OtherActor, OwnerPlayer))
         {
-            CurrentSelectable = OtherActor;
-            //UpdateInteractionUI(true);
+            OverlappingSelectables.Add(OtherActor);
+            UpdateBestSelectable();
         }
     }
 }
 
 void UPikminInteractionComponent::OnSphereOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-    if (OtherActor == CurrentSelectable)
+    if (!OtherActor)
     {
-        CurrentSelectable = nullptr;
-        //UpdateInteractionUI(false);
+        return;
+    }
+
+    if (OverlappingSelectables.Remove(OtherActor) > 0)
+    {
+        UpdateBestSelectable();
     }
 }
