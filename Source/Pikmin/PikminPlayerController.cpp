@@ -26,13 +26,15 @@ void APikminPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
-	//{
-	//	if (InputContext)
-	//	{
-	//		Subsystem->AddMappingContext(InputContext, 0);
-	//	}
-	//}
+	if (IsLocalPlayerController())
+	{
+		FRotator StartRot = GetControlRotation();
+		StartRot.Pitch = -30.0f;
+		SetControlRotation(StartRot);
+
+		// clear any autopitch from toggling before play
+		PitchToggleStartRotation = StartRot;
+	}
 
 	CameraRig = FindCameraRig();
 	if (!CameraRig)
@@ -73,6 +75,8 @@ void APikminPlayerController::SetupInputComponent()
 			EIC->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APikminPlayerController::HandleMoveInput);
 			EIC->BindAction(CameraRotateAction, ETriggerEvent::Triggered, this, &APikminPlayerController::HandleCameraRotate);
 			EIC->BindAction(CameraZoomAction, ETriggerEvent::Triggered, this, &APikminPlayerController::HandleCameraZoom);
+			EIC->BindAction(ResetCameraAction, ETriggerEvent::Triggered, this, &APikminPlayerController::HandleResetCamera);
+			EIC->BindAction(CameraTogglePitchAction, ETriggerEvent::Triggered, this, &APikminPlayerController::HandleToggleCameraPitch);
 			EIC->BindAction(WhistleAction, ETriggerEvent::Started, this, &APikminPlayerController::HandleWhistleStarted);
 			EIC->BindAction(WhistleAction, ETriggerEvent::Completed, this, &APikminPlayerController::HandleWhistleCompleted);
 			EIC->BindAction(DismissAction, ETriggerEvent::Started, this, &APikminPlayerController::HandleDismiss);
@@ -86,9 +90,52 @@ void APikminPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if (!CameraRig)
+	//if (!CameraRig)
+	//{
+	//	CameraRig = FindCameraRig();
+	//}
+
+	// ---- Smooth camera reset ----
+	if (bIsResettingCamera)
 	{
-		CameraRig = FindCameraRig();
+		ResetElapsed += DeltaSeconds;
+		float Alpha = FMath::Clamp(ResetElapsed / ResetDuration, 0.0f, 1.0f);
+
+		// Smooth interpolation
+		FRotator NewRotation = FMath::RInterpTo(
+			ResetStartRotation,
+			ResetTargetRotation,
+			ResetElapsed,
+			6.5f // smoothing speed
+		);
+
+		SetControlRotation(NewRotation);
+
+		if (Alpha >= 1.0f)
+		{
+			bIsResettingCamera = false;
+		}
+	}
+
+	// --- Camera pitch toggling ---
+	if (bIsTogglingPitch)
+	{
+		PitchToggleElapsed += DeltaSeconds;
+		float Alpha = FMath::Clamp(PitchToggleElapsed / PitchToggleDuration, 0.0f, 1.0f);
+
+		FRotator NewRot = FMath::RInterpTo(
+			PitchToggleStartRotation,
+			PitchToggleTargetRotation,
+			PitchToggleElapsed,
+			6.5f  // smoothing speed
+		);
+
+		SetControlRotation(NewRot);
+
+		if (Alpha >= 1.0f)
+		{
+			bIsTogglingPitch = false;
+		}
 	}
 }
 
@@ -108,24 +155,13 @@ void APikminPlayerController::HandleMoveInput(const FInputActionValue& Value)
 
 void APikminPlayerController::HandleCameraRotate(const FInputActionValue& Value)
 {
-	//if (APikminPlayerCharacter* Player = Cast<APikminPlayerCharacter>(GetPawn()))
-	//{
-	//	if ()
-	//}
-
 	float Axis = Value.Get<float>();
+
 	FRotator CurrentRotation = GetControlRotation();
-	SetControlRotation(CurrentRotation + FRotator(CurrentRotation.Pitch, Axis * 2.5f, CurrentRotation.Roll));
+	CurrentRotation.Yaw += Axis * 2.5f;
+	CurrentRotation.Roll = 0.0f;
 
-	if (!CameraRig)
-	{
-		return;
-	}
-
-	//float Axis = Value.Get<float>();
-	//CameraRig->EnterState(EPikminCameraState::Orbit, 0.15f);
-	//// Drive orbit yaw directly (simple)
-	//CameraRig->OrbitYaw += Axis * 2.5f;
+	SetControlRotation(CurrentRotation);
 }
 
 void APikminPlayerController::HandleCameraZoom(const FInputActionValue& Value)
@@ -144,10 +180,62 @@ void APikminPlayerController::HandleCameraZoom(const FInputActionValue& Value)
 	{
 		return;
 	}
+}
 
-	//float Axis = Value.Get<float>();
-	//float NewZoom = FMath::Clamp(CameraRig->ZoomAlpha + Axis * 0.1f, 0.0f, 1.0f);
-	//CameraRig->SetZoomAlpha(NewZoom);
+void APikminPlayerController::HandleResetCamera(const FInputActionValue& Value)
+{
+	float CurrentTime = GetWorld()->GetTimeSeconds();
+
+	// Check if still in cooldown from previous reset
+	if (CurrentTime - LastResetTime < ResetCooldown)
+	{
+		return;
+	}
+
+	LastResetTime = CurrentTime;
+
+	if (APawn* PlayerPawn = GetPawn())
+	{
+		// target is player's facing direction
+		const float DesiredPitch = bOverheadMode ? -60.0f : -30.0f;
+
+		ResetTargetRotation = PlayerPawn->GetActorRotation();
+		ResetTargetRotation.Pitch = DesiredPitch;
+
+		// start from current rotation
+		ResetStartRotation = GetControlRotation();
+		ResetElapsed = 0.0f;
+
+		bIsResettingCamera = true;
+	}
+}
+
+void APikminPlayerController::HandleToggleCameraPitch(const FInputActionValue& Value)
+{
+	float CurrentTime = GetWorld()->GetTimeSeconds();
+
+	// Cooldown
+	if (CurrentTime - LastPitchToggleTime < PitchToggleCooldown)
+	{
+		return;
+	}
+
+	LastPitchToggleTime = CurrentTime;
+
+	// Determine new mode
+	bOverheadMode = !bOverheadMode;
+
+	// Build target pitch
+	const float TargetPitch = bOverheadMode ? -60.0f : -30.0f;
+
+	// Set up interpolation
+	PitchToggleStartRotation = GetControlRotation();
+
+	PitchToggleTargetRotation = PitchToggleStartRotation;
+	PitchToggleTargetRotation.Pitch = TargetPitch;
+
+	PitchToggleElapsed = 0.0f;
+	bIsTogglingPitch = true;
 }
 
 void APikminPlayerController::HandleWhistleStarted(const FInputActionValue& Value)

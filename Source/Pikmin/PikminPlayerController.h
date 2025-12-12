@@ -44,6 +44,12 @@ private:
     UInputAction* CameraZoomAction;
 
     UPROPERTY(EditDefaultsOnly, Category = "Input")
+    UInputAction* ResetCameraAction;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Input")
+    UInputAction* CameraTogglePitchAction;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Input")
     UInputAction* WhistleAction;
 
     UPROPERTY(EditDefaultsOnly, Category = "Input")
@@ -56,10 +62,37 @@ private:
     UPROPERTY()
     ACameraRig* CameraRig;
 
+    // --- Camera Reset Smooth Lerp ---
+    bool bIsResettingCamera = false;
+    FRotator ResetStartRotation;
+    FRotator ResetTargetRotation;
+    float ResetElapsed = 0.0f;
+    float ResetDuration = 0.35f;
+
+    // --- Camera Reset Cooldown ---
+    float LastResetTime = -999.0f;
+    float ResetCooldown = 0.4f;
+
+    // --- Camera Pitch Toggle ---
+    bool bIsTogglingPitch = false;
+    bool bOverheadMode = false;
+
+    FRotator PitchToggleStartRotation;
+    FRotator PitchToggleTargetRotation;
+
+    float PitchToggleElapsed = 0.0f;
+    float PitchToggleDuration = 0.35f;
+
+    // --- Camera mode cooldown ---
+    float LastPitchToggleTime = -999.0f;
+    float PitchToggleCooldown = 0.4f;
+
 private:
     void HandleMoveInput(const FInputActionValue& Value);
     void HandleCameraRotate(const FInputActionValue& Value);
     void HandleCameraZoom(const FInputActionValue& Value);
+    void HandleResetCamera(const FInputActionValue& Value);
+    void HandleToggleCameraPitch(const FInputActionValue& Value);
     void HandleWhistleStarted(const FInputActionValue& Value);
     void HandleWhistleCompleted(const FInputActionValue& Value);
     void HandleDismiss(const FInputActionValue& Value);
