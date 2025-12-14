@@ -24,6 +24,7 @@ void UPikminThrowTargetComponent::BeginPlay()
 
 	TargetDecal = NewObject<UDecalComponent>(GetOwner(), TEXT("ThrowTargetDecal"));
 	TargetDecal->SetupAttachment(GetOwner()->GetRootComponent());
+	TargetDecal->SetUsingAbsoluteRotation(true);
 	TargetDecal->RegisterComponent();
 
 	TargetDecal->DecalSize = FVector(32.0f, 64.0f, 64.0f);
