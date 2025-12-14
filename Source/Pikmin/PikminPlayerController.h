@@ -59,10 +59,10 @@ private:
     UInputAction* ThrowAimAction;
 
     UPROPERTY(EditDefaultsOnly, Category = "Camera|Mouse Edge Rotate")
-    float EdgeRotateMarginPx = 48.0f;
+    float EdgeRotateMarginPx = 128.0f;
 
     UPROPERTY(EditDefaultsOnly, Category = "Camera|Mouse Edge Rotate")
-    float MaxEdgeRotateSpeed = 120.0f; // deg/sec
+    float MaxEdgeRotateSpeed = 200.0f; // deg/sec
 
     UPROPERTY(EditDefaultsOnly, Category = "Camera|Mouse Edge Rotate")
     bool bEnableMouseEdgeRotate = true;
