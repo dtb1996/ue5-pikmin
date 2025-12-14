@@ -10,6 +10,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class ACameraRig;
 class UPikminWhistleComponent;
+class UPikminThrowTargetComponent;
 class UPikminInteractionComponent;
 
 UCLASS(abstract)
@@ -38,6 +39,9 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pikmin")
     UPikminWhistleComponent* WhistleComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pikmin")
+    UPikminThrowTargetComponent* ThrowTargetComponent;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction")
     UPikminInteractionComponent* InteractionComponent;

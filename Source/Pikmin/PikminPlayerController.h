@@ -58,6 +58,15 @@ private:
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     UInputAction* ThrowAimAction;
 
+    UPROPERTY(EditDefaultsOnly, Category = "Camera|Mouse Edge Rotate")
+    float EdgeRotateMarginPx = 48.0f;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Camera|Mouse Edge Rotate")
+    float MaxEdgeRotateSpeed = 120.0f; // deg/sec
+
+    UPROPERTY(EditDefaultsOnly, Category = "Camera|Mouse Edge Rotate")
+    bool bEnableMouseEdgeRotate = true;
+
     /** Cached camera rig pointer */
     UPROPERTY()
     ACameraRig* CameraRig;
@@ -87,6 +96,9 @@ private:
     float LastPitchToggleTime = -999.0f;
     float PitchToggleCooldown = 0.4f;
 
+    float CachedMouseXInput = 0.0f;
+    bool bIsThrowAiming = false;
+
 private:
     void HandleMoveInput(const FInputActionValue& Value);
     void HandleCameraRotate(const FInputActionValue& Value);
@@ -101,4 +113,6 @@ private:
 
     /** Helper to find camera rig in world (first one or attached to pawn) */
     ACameraRig* FindCameraRig();
+
+    void HandleMouseEdgeCameraRotate(float DeltaSeconds);
 };

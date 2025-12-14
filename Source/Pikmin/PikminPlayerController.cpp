@@ -13,6 +13,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Systems/PikminWhistleComponent.h"
+#include "Systems/PikminThrowTargetComponent.h"
 
 APikminPlayerController::APikminPlayerController()
 {
@@ -95,6 +96,11 @@ void APikminPlayerController::Tick(float DeltaSeconds)
 	//	CameraRig = FindCameraRig();
 	//}
 
+	if (!IsLocalPlayerController())
+	{
+		return;
+	}
+
 	// ---- Smooth camera reset ----
 	if (bIsResettingCamera)
 	{
@@ -137,6 +143,10 @@ void APikminPlayerController::Tick(float DeltaSeconds)
 			bIsTogglingPitch = false;
 		}
 	}
+
+	HandleMouseEdgeCameraRotate(DeltaSeconds);
+
+	CachedMouseXInput = 0.0f;
 }
 
 void APikminPlayerController::HandleMoveInput(const FInputActionValue& Value)
@@ -157,6 +167,23 @@ void APikminPlayerController::HandleCameraRotate(const FInputActionValue& Value)
 {
 	float Axis = Value.Get<float>();
 
+	// Cache mouse X for edge scrolling
+	CachedMouseXInput = Axis;
+
+	// While aiming throw, do not rotate directly
+	if (bEnableMouseEdgeRotate && bIsThrowAiming)
+	{
+		APikminPlayerCharacter* PlayerCharacter = Cast<APikminPlayerCharacter>(GetPawn());
+		if (PlayerCharacter && PlayerCharacter->ThrowTargetComponent)
+		{
+			if (PlayerCharacter->ThrowTargetComponent->GetInputMode() == EPikminTargetInputMode::Mouse)
+			{
+				return;
+			}
+		}
+	}
+
+	// Normal camera rotation (non-throw)
 	FRotator CurrentRotation = GetControlRotation();
 	CurrentRotation.Yaw += Axis * 2.5f;
 	CurrentRotation.Roll = 0.0f;
@@ -279,27 +306,17 @@ void APikminPlayerController::HandleDismiss(const FInputActionValue& Value)
 
 void APikminPlayerController::HandleThrowAimPressed(const FInputActionValue& Value)
 {
-	if (!CameraRig)
-	{
-		return;
-	}
-
-	CameraRig->EnterState(EPikminCameraState::ThrowAim, 0.10f);
+	bIsThrowAiming = true;
 }
 
 void APikminPlayerController::HandleThrowAimReleased(const FInputActionValue& Value)
 {
+	bIsThrowAiming = false
+		;
 	if (APikminPlayerCharacter* PlayerCharacter = Cast<APikminPlayerCharacter>(GetPawn()))
 	{
 		PlayerCharacter->CommandThrow();
 	}
-
-	if (!CameraRig)
-	{
-		return;
-	}
-
-	CameraRig->ExitState(EPikminCameraState::ThrowAim, 0.12f);
 }
 
 ACameraRig* APikminPlayerController::FindCameraRig()
@@ -327,4 +344,83 @@ ACameraRig* APikminPlayerController::FindCameraRig()
 	}
 
 	return nullptr;
+}
+
+void APikminPlayerController::HandleMouseEdgeCameraRotate(float DeltaSeconds)
+{
+	if (!bEnableMouseEdgeRotate)
+	{
+		return;
+	}
+
+	if (!bIsThrowAiming)
+	{
+		return;
+	}
+
+	// Require actual mouse X input this frame
+	if (FMath::IsNearlyZero(CachedMouseXInput))
+	{
+		return;
+	}
+
+	APikminPlayerCharacter* PlayerCharacter = Cast<APikminPlayerCharacter>(GetPawn());
+	if (!PlayerCharacter || !PlayerCharacter->ThrowTargetComponent)
+	{
+		return;
+	}
+
+	// Only when using mouse targeting
+	if (PlayerCharacter->ThrowTargetComponent->GetInputMode() != EPikminTargetInputMode::Mouse)
+	{
+		return;
+	}
+
+	FVector2D MousePos;
+	if (!GetMousePosition(MousePos.X, MousePos.Y))
+	{
+		return;
+	}
+
+	float ZoomScale = 1.0f;
+
+	if (PlayerCharacter->CameraBoom)
+	{
+		const float ArmLength = PlayerCharacter->CameraBoom->TargetArmLength;
+
+		// Match your zoom limits
+		const float MinZoom = 450.0f;
+		const float MaxZoom = 800.0f;
+
+		// 0 = close, 1 = far
+		float ZoomAlpha = FMath::Clamp((ArmLength - MinZoom) / (MaxZoom - MinZoom), 0.0f, 1.0f);
+
+		// Slight bias so close zoom isn’t *too* slow
+		ZoomScale = FMath::Lerp(0.6f, 1.25f, ZoomAlpha);
+	}
+
+	int32 ViewX, ViewY;
+	GetViewportSize(ViewX, ViewY);
+
+	float YawDelta = 0.0f;
+
+	// Left edge
+	if (MousePos.X <= EdgeRotateMarginPx && CachedMouseXInput < 0.0f)
+	{
+		float Alpha = 1.0f - (MousePos.X / EdgeRotateMarginPx);
+		YawDelta = -MaxEdgeRotateSpeed * Alpha;
+	}
+	// Right edge
+	else if (MousePos.X >= ViewX - EdgeRotateMarginPx && CachedMouseXInput > 0.0f)
+	{
+		float Alpha = (MousePos.X - (ViewX - EdgeRotateMarginPx)) / EdgeRotateMarginPx;
+		YawDelta = MaxEdgeRotateSpeed * Alpha;
+	}
+
+	if (!FMath::IsNearlyZero(YawDelta))
+	{
+		FRotator NewRot = GetControlRotation();
+		NewRot.Yaw += YawDelta * ZoomScale * DeltaSeconds;
+		SetControlRotation(NewRot);
+	}
 }

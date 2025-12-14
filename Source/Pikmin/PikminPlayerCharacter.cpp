@@ -11,6 +11,7 @@
 #include "AI/PikminCharacter.h"
 #include "AI/PikminAIController.h"
 #include "Systems/PikminWhistleComponent.h"
+#include "Systems/PikminThrowTargetComponent.h"
 #include "Systems/PikminInteractionComponent.h"
 
 APikminPlayerCharacter::APikminPlayerCharacter()
@@ -42,6 +43,9 @@ APikminPlayerCharacter::APikminPlayerCharacter()
 
     // Whistle component
     WhistleComponent = CreateDefaultSubobject<UPikminWhistleComponent>(TEXT("WhistleComponent"));
+
+    // Throw target component
+    ThrowTargetComponent = CreateDefaultSubobject<UPikminThrowTargetComponent>(TEXT("ThrowTargetComponent"));
 
     // Interaction component
     InteractionComponent = CreateDefaultSubobject<UPikminInteractionComponent>(TEXT("InteractionComponent"));
