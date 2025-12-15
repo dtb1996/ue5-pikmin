@@ -12,6 +12,7 @@ class ACameraRig;
 class UPikminWhistleComponent;
 class UPikminThrowTargetComponent;
 class UPikminInteractionComponent;
+class UPikminPlayerAnimInstance;
 
 UCLASS(abstract)
 class APikminPlayerCharacter : public ACharacter
@@ -64,6 +65,14 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Gameplay")
     void TryPluck();
+
+    UFUNCTION(BlueprintCallable, Category = "Gameplay")
+    void StartWhistle();
+
+    UFUNCTION(BlueprintCallable, Category = "Gameplay")
+    void EndWhistle();
+
+    UPikminPlayerAnimInstance* GetPikminAnimInstance() const;
 
 protected:   
     /** Camera rig class to spawn */

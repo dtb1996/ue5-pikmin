@@ -13,6 +13,7 @@
 #include "Systems/PikminWhistleComponent.h"
 #include "Systems/PikminThrowTargetComponent.h"
 #include "Systems/PikminInteractionComponent.h"
+#include "Player/PikminPlayerAnimInstance.h"
 
 APikminPlayerCharacter::APikminPlayerCharacter()
 {
@@ -136,6 +137,11 @@ void APikminPlayerCharacter::CommandThrow()
         return;
     }
 
+    if (UPikminPlayerAnimInstance* Anim = GetPikminAnimInstance())
+    {
+        Anim->PlayThrowMontage();
+    }
+
     // Throw Pikmin
     UPikminManagerSubsystem* PikminManager = GetGameInstance()->GetSubsystem<UPikminManagerSubsystem>();
     APikminCharacter* Pikmin = PikminManager->GetNextThrowablePikmin(this);
@@ -152,6 +158,42 @@ void APikminPlayerCharacter::CommandThrow()
 void APikminPlayerCharacter::TryPluck()
 {
     InteractionComponent->TryPluck();
+}
+
+void APikminPlayerCharacter::StartWhistle()
+{
+    if (UPikminPlayerAnimInstance* Anim = GetPikminAnimInstance())
+    {
+        Anim->bIsWhistling = true;
+    }
+
+    if (UPikminWhistleComponent* Whistle = FindComponentByClass<UPikminWhistleComponent>())
+    {
+        Whistle->StartWhistle();
+    }
+}
+
+void APikminPlayerCharacter::EndWhistle()
+{
+    if (UPikminPlayerAnimInstance* Anim = GetPikminAnimInstance())
+    {
+        Anim->bIsWhistling = false;
+    }
+
+    if (UPikminWhistleComponent* Whistle = FindComponentByClass<UPikminWhistleComponent>())
+    {
+        Whistle->EndWhistle();
+    }
+}
+
+UPikminPlayerAnimInstance* APikminPlayerCharacter::GetPikminAnimInstance() const
+{
+    if (USkeletalMeshComponent* SkeletalMesh = GetMesh())
+    {
+        return Cast<UPikminPlayerAnimInstance>(SkeletalMesh->GetAnimInstance());
+    }
+    
+    return nullptr;
 }
 
 FVector APikminPlayerCharacter::GetThrowAimPoint() const

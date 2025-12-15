@@ -267,12 +267,9 @@ void APikminPlayerController::HandleToggleCameraPitch(const FInputActionValue& V
 
 void APikminPlayerController::HandleWhistleStarted(const FInputActionValue& Value)
 {
-	if (APawn* PlayerPawn = GetPawn())
+	if (APikminPlayerCharacter* PlayerCharacter = Cast<APikminPlayerCharacter>(GetPawn()))
 	{
-		if (auto Whistle = PlayerPawn->FindComponentByClass<UPikminWhistleComponent>())
-		{
-			Whistle->StartWhistle();
-		}
+		PlayerCharacter->StartWhistle();
 	}
 
 	if (!CameraRig)
@@ -287,12 +284,9 @@ void APikminPlayerController::HandleWhistleStarted(const FInputActionValue& Valu
 
 void APikminPlayerController::HandleWhistleCompleted(const FInputActionValue& Value)
 {
-	if (APawn* PlayerPawn = GetPawn())
+	if (APikminPlayerCharacter* PlayerCharacter = Cast<APikminPlayerCharacter>(GetPawn()))
 	{
-		if (auto Whistle = PlayerPawn->FindComponentByClass<UPikminWhistleComponent>())
-		{
-			Whistle->EndWhistle();
-		}
+		PlayerCharacter->EndWhistle();
 	}
 }
 
