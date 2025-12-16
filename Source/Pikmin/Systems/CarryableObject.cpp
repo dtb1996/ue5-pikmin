@@ -9,6 +9,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/StaticMeshComponent.h"
 
 ACarryableObject::ACarryableObject()
 {
@@ -18,6 +19,11 @@ ACarryableObject::ACarryableObject()
 	GetCharacterMovement()->MaxWalkSpeed = BaseMoveSpeed;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 360.0f, 0.0f);
+
+	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+	StaticMeshComponent->SetupAttachment(RootComponent);
+	StaticMeshComponent->SetCanEverAffectNavigation(false);
+	StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	// AI Controller
 	AIControllerClass = ACarryableAIController::StaticClass();

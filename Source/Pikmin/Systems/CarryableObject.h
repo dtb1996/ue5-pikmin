@@ -9,6 +9,7 @@
 #include "CarryableObject.generated.h"
 
 class APikminCharacter;
+class UStaticMeshComponent;
 
 UCLASS()
 class PIKMIN_API ACarryableObject : public ACharacter, public IPikminTaskInteractable
@@ -35,6 +36,8 @@ public:
 	virtual EItemType GetItemType_Implementation() const override;
 	virtual int32 GetPikminYield_Implementation() const override;
 
+	void SetDeliveryTarget(AActor* Target) { DeliveryTarget = Target; };
+
 protected:
 	/** Returns a snap position in the ring */
 	FVector GetPikminAttachPoint(int32 Index) const;
@@ -44,6 +47,10 @@ protected:
 
 	/** Set the movement speed based on the current number of attached Pikmin */
 	void UpdateMovement();
+
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UStaticMeshComponent* StaticMeshComponent;
 
 private:
 	// ---- Task Settings ----
@@ -77,7 +84,4 @@ private:
 	TArray<TWeakObjectPtr<APikminCharacter>> AssignedPikmin;
 
 	bool bIsMoving = false;
-
-public:
-	void SetDeliveryTarget(AActor* Target) { DeliveryTarget = Target; };
 };
