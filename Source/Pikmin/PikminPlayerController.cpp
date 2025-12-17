@@ -305,6 +305,7 @@ void APikminPlayerController::HandleThrowAimPressed(const FInputActionValue& Val
 	if (APikminPlayerCharacter* PlayerCharacter = Cast<APikminPlayerCharacter>(GetPawn()))
 	{
 		PlayerCharacter->CommandAim();
+		PlayerCharacter->SetMovementEnabled(false);
 	}
 }
 
@@ -315,6 +316,7 @@ void APikminPlayerController::HandleThrowAimReleased(const FInputActionValue& Va
 	if (APikminPlayerCharacter* PlayerCharacter = Cast<APikminPlayerCharacter>(GetPawn()))
 	{
 		PlayerCharacter->CommandThrow();
+		PlayerCharacter->SetMovementEnabled(true);
 	}
 }
 

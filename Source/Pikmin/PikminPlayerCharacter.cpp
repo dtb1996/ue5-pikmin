@@ -209,6 +209,22 @@ void APikminPlayerCharacter::EndWhistle()
     }
 }
 
+void APikminPlayerCharacter::SetMovementEnabled(bool bEnabled)
+{
+    if (UCharacterMovementComponent* MoveComp = GetCharacterMovement())
+    {
+        if (bEnabled)
+        {
+            MoveComp->SetMovementMode(MOVE_Walking);
+        }
+        else
+        {
+            MoveComp->StopMovementImmediately();
+            MoveComp->SetMovementMode(MOVE_None);
+        }
+    }
+}
+
 UPikminPlayerAnimInstance* APikminPlayerCharacter::GetPikminAnimInstance() const
 {
     if (USkeletalMeshComponent* SkeletalMesh = GetMesh())

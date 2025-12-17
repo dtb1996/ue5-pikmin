@@ -75,6 +75,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Gameplay")
     void EndWhistle();
 
+    void SetMovementEnabled(bool bEnabled);
+
     UPikminPlayerAnimInstance* GetPikminAnimInstance() const;
 
 protected:   
