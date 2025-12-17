@@ -18,12 +18,14 @@ void UPikminWhistleComponent::TickComponent(float DeltaTime, ELevelTick TickType
 		return;
 	}
 
+	const FVector Origin = WhistleOrigin;
+
 	CurrentRadius = FMath::Clamp(CurrentRadius + ExpansionSpeed * DeltaTime, 0.f, MaxRadius);
 
 	TArray<AActor*> Overlaps;
 	UKismetSystemLibrary::SphereOverlapActors(
 		this,
-		GetOwner()->GetActorLocation(),
+		Origin,
 		CurrentRadius,
 		{ UEngineTypes::ConvertToObjectType(ECC_Pawn) },
 		nullptr,
@@ -42,7 +44,7 @@ void UPikminWhistleComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	// Debug circle
 	if (bDrawDebug)
 	{
-		DrawDebugSphere(GetWorld(), GetOwner()->GetActorLocation(), CurrentRadius, 24, FColor::Blue, false, 0.05f);
+		DrawDebugSphere(GetWorld(), Origin, CurrentRadius, 24, FColor::Blue, false, 0.05f);
 	}
 }
 
@@ -50,19 +52,20 @@ void UPikminWhistleComponent::StartWhistle()
 {
 	bIsWhistling = true;
 	CurrentRadius = StartRadius;
+
+	if (WhistleOrigin.IsNearlyZero())
+	{
+		WhistleOrigin = GetOwner()->GetActorLocation();
+	}
 }
 
 void UPikminWhistleComponent::EndWhistle()
 {
 	bIsWhistling = false;
+	WhistleOrigin = FVector::ZeroVector;
+}
 
-	//for (AActor* Pikmin : SelectedPikmin)
-	//{
-	//	if (IPikminSelectable* Selectable = Cast<IPikminSelectable>(Pikmin))
-	//	{
-	//		Selectable->OnWhistleDeselect();
-	//	}
-	//}
-
-	//SelectedPikmin.Empty();
+void UPikminWhistleComponent::SetWhistleOrigin(const FVector& InOrigin)
+{
+	WhistleOrigin = InOrigin;
 }

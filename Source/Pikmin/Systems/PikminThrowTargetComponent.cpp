@@ -81,11 +81,6 @@ void UPikminThrowTargetComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 void UPikminThrowTargetComponent::UpdateTargetLocation_Gamepad()
 {
-	if (!PC)
-	{
-		return;
-	}
-
 	const ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
 	if (!OwnerCharacter)
 	{
@@ -96,6 +91,7 @@ void UPikminThrowTargetComponent::UpdateTargetLocation_Gamepad()
 	const FVector Forward = YawRot.Vector();
 
 	FVector Desired = OwnerCharacter->GetActorLocation() + Forward * GamepadDistance;
+	Desired = ClampToMaxDistance(Desired);
 
 	FVector Hit;
 	if (TraceToGround(Desired + FVector(0, 0, TraceHeight), Desired - FVector(0, 0, TraceHeight), Hit))
@@ -114,7 +110,8 @@ void UPikminThrowTargetComponent::UpdateTargetLocation_Mouse()
 	FHitResult Hit;
 	if (PC->GetHitResultUnderCursor(ECC_Visibility, false, Hit))
 	{
-		TargetLocation = Hit.ImpactPoint;
+		const FVector Clamped = ClampToMaxDistance(Hit.ImpactPoint);
+		TargetLocation = Clamped;
 	}
 }
 
@@ -131,6 +128,26 @@ bool UPikminThrowTargetComponent::TraceToGround(const FVector& Start, const FVec
 	}
 
 	return false;
+}
+
+FVector UPikminThrowTargetComponent::ClampToMaxDistance(const FVector& DesiredWorldPos) const
+{
+	const AActor* Owner = GetOwner();
+	if (!Owner)
+	{
+		return DesiredWorldPos;
+	}
+
+	const FVector Origin = Owner->GetActorLocation();
+	const FVector ToTarget = DesiredWorldPos - Origin;
+	const float MaxTargetDistance = InputMode == EPikminTargetInputMode::Mouse ? MaxTargetDistance_Mouse : MaxTargetDistance_Gamepad;
+
+	if (ToTarget.Length() <= MaxTargetDistance)
+	{
+		return DesiredWorldPos;
+	}
+
+	return Origin + ToTarget.GetSafeNormal() * MaxTargetDistance;
 }
 
 void UPikminThrowTargetComponent::HandleHardwareDeviceChanged(const FPlatformUserId UserId, const FInputDeviceId DeviceId)

@@ -27,6 +27,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void EndWhistle();
 
+	UFUNCTION(BlueprintCallable)
+	void SetWhistleOrigin(const FVector& InOrigin);
+
 private:
 	UPROPERTY(EditAnywhere)
 	float StartRadius = 50.0f;
@@ -41,7 +44,7 @@ private:
 
 	bool bIsWhistling = false;
 
-	//TArray<AActor*> SelectedPikmin;
+	FVector WhistleOrigin;
 
 protected:
 	/** Debug */

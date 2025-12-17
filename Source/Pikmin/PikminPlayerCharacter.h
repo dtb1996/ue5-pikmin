@@ -82,8 +82,5 @@ protected:
     /** Runtime pointer to spawned rig */
     UPROPERTY()
     ACameraRig* SpawnedCameraRig;
-
-private:
-    FVector GetThrowAimPoint() const;
 };
 

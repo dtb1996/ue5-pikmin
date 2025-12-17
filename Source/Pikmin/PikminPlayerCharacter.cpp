@@ -137,6 +137,11 @@ void APikminPlayerCharacter::CommandThrow()
         return;
     }
 
+    if (!ThrowTargetComponent)
+    {
+        return;
+    }
+
     if (UPikminPlayerAnimInstance* Anim = GetPikminAnimInstance())
     {
         Anim->PlayThrowMontage();
@@ -151,8 +156,8 @@ void APikminPlayerCharacter::CommandThrow()
         return;
     }
 
-    FVector ThrowTarget = GetThrowAimPoint();
-    Pikmin->BeginThrowTo(ThrowTarget);
+    const FVector TargetLocation = ThrowTargetComponent->GetTargetLocation();
+    Pikmin->BeginThrowTo(TargetLocation);
 }
 
 void APikminPlayerCharacter::TryPluck()
@@ -167,9 +172,17 @@ void APikminPlayerCharacter::StartWhistle()
         Anim->bIsWhistling = true;
     }
 
-    if (UPikminWhistleComponent* Whistle = FindComponentByClass<UPikminWhistleComponent>())
+    if (WhistleComponent)
     {
-        Whistle->StartWhistle();
+        FVector Origin = GetActorLocation();
+
+        if (ThrowTargetComponent)
+        {
+            Origin = ThrowTargetComponent->GetTargetLocation();
+        }
+
+        WhistleComponent->SetWhistleOrigin(Origin);
+        WhistleComponent->StartWhistle();
     }
 }
 
@@ -180,9 +193,9 @@ void APikminPlayerCharacter::EndWhistle()
         Anim->bIsWhistling = false;
     }
 
-    if (UPikminWhistleComponent* Whistle = FindComponentByClass<UPikminWhistleComponent>())
+    if (WhistleComponent)
     {
-        Whistle->EndWhistle();
+        WhistleComponent->EndWhistle();
     }
 }
 
@@ -194,11 +207,4 @@ UPikminPlayerAnimInstance* APikminPlayerCharacter::GetPikminAnimInstance() const
     }
     
     return nullptr;
-}
-
-FVector APikminPlayerCharacter::GetThrowAimPoint() const
-{
-    const float ThrowDistance = 500.0f;
-
-    return GetActorLocation() + (GetActorForwardVector() * ThrowDistance);
 }

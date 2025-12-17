@@ -34,6 +34,9 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
+	bool HasValidTarget() const { return !TargetLocation.IsNearlyZero(); };
+
+	UFUNCTION(BlueprintCallable)
 	FVector GetTargetLocation() const { return TargetLocation; };
 
 	UFUNCTION(BlueprintCallable)
@@ -43,6 +46,7 @@ private:
 	void UpdateTargetLocation_Gamepad();
 	void UpdateTargetLocation_Mouse();
 	bool TraceToGround(const FVector& Start, const FVector& End, FVector& OutHit) const;
+	FVector ClampToMaxDistance(const FVector& DesiredWorldPos) const;
 
 	UFUNCTION()
 	void HandleHardwareDeviceChanged(const FPlatformUserId UserId, const FInputDeviceId DeviceId);
@@ -51,6 +55,12 @@ private:
 	FPlatformUserId GetOwningPlatformUserId() const;
 
 private:
+	UPROPERTY(EditAnywhere, Category = "Config|Gamepad")
+	float MaxTargetDistance_Gamepad = 500.f;
+
+	UPROPERTY(EditAnywhere, Category = "Config|Mouse")
+	float MaxTargetDistance_Mouse = 900.f;
+
 	UPROPERTY(EditAnywhere, Category = "Config")
 	UMaterialInterface* TargetDecalMaterial = nullptr;
 	
