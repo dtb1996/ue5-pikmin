@@ -301,6 +301,11 @@ void APikminPlayerController::HandleDismiss(const FInputActionValue& Value)
 void APikminPlayerController::HandleThrowAimPressed(const FInputActionValue& Value)
 {
 	bIsThrowAiming = true;
+
+	if (APikminPlayerCharacter* PlayerCharacter = Cast<APikminPlayerCharacter>(GetPawn()))
+	{
+		PlayerCharacter->CommandAim();
+	}
 }
 
 void APikminPlayerController::HandleThrowAimReleased(const FInputActionValue& Value)

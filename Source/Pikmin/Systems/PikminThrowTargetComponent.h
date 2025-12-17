@@ -17,6 +17,13 @@ enum class EPikminTargetInputMode : uint8
 	Mouse
 };
 
+UENUM()
+enum class EPikminMouseTargetState : uint8
+{
+	Passive,
+	Aiming
+};
+
 
 UCLASS(Blueprintable, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent) )
 class PIKMIN_API UPikminThrowTargetComponent : public UActorComponent
@@ -41,6 +48,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	EPikminTargetInputMode GetInputMode() const { return InputMode; };
+
+	UFUNCTION(BlueprintCallable)
+	void BeginMouseAim();
+
+	UFUNCTION(BlueprintCallable)
+	void EndMouseAim();
 
 private:
 	void UpdateTargetLocation_Gamepad();
@@ -73,6 +86,8 @@ private:
 	FVector TargetLocation;
 
 	EPikminTargetInputMode InputMode = EPikminTargetInputMode::Mouse;
+
+	EPikminMouseTargetState MouseTargetState = EPikminMouseTargetState::Passive;
 
 	UPROPERTY(EditAnywhere, Category = "Config")
 	float GamepadDistance = 250.0f;

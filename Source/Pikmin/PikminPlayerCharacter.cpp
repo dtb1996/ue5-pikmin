@@ -128,7 +128,7 @@ void APikminPlayerCharacter::CommandDismiss()
     }
 }
 
-void APikminPlayerCharacter::CommandThrow()
+void APikminPlayerCharacter::CommandAim()
 {
     // If pluckable sprout in range then pluck instead of throwing
     if (InteractionComponent && InteractionComponent->GetCurrentSelectable() != nullptr)
@@ -137,6 +137,16 @@ void APikminPlayerCharacter::CommandThrow()
         return;
     }
 
+    if (!ThrowTargetComponent)
+    {
+        return;
+    }
+
+    ThrowTargetComponent->BeginMouseAim();
+}
+
+void APikminPlayerCharacter::CommandThrow()
+{
     if (!ThrowTargetComponent)
     {
         return;
@@ -151,13 +161,13 @@ void APikminPlayerCharacter::CommandThrow()
     UPikminManagerSubsystem* PikminManager = GetGameInstance()->GetSubsystem<UPikminManagerSubsystem>();
     APikminCharacter* Pikmin = PikminManager->GetNextThrowablePikmin(this);
 
-    if (!Pikmin)
+    if (Pikmin)
     {
-        return;
+        const FVector TargetLocation = ThrowTargetComponent->GetTargetLocation();
+        Pikmin->BeginThrowTo(TargetLocation);
     }
 
-    const FVector TargetLocation = ThrowTargetComponent->GetTargetLocation();
-    Pikmin->BeginThrowTo(TargetLocation);
+    ThrowTargetComponent->EndMouseAim();
 }
 
 void APikminPlayerCharacter::TryPluck()

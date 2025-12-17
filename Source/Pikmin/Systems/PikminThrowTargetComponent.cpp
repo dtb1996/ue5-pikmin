@@ -79,6 +79,28 @@ void UPikminThrowTargetComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	TargetDecal->SetWorldLocation(TargetLocation + FVector(0, 0, 2.0f));
 }
 
+void UPikminThrowTargetComponent::BeginMouseAim()
+{
+	if (InputMode != EPikminTargetInputMode::Mouse || !PC)
+	{
+		return;
+	}
+
+	MouseTargetState = EPikminMouseTargetState::Aiming;
+
+	// Snap cursor to current target position
+	FVector2D ScreenPos;
+	if (PC->ProjectWorldLocationToScreen(TargetLocation, ScreenPos))
+	{
+		PC->SetMouseLocation(ScreenPos.X, ScreenPos.Y);
+	}
+}
+
+void UPikminThrowTargetComponent::EndMouseAim()
+{
+	MouseTargetState = EPikminMouseTargetState::Passive;
+}
+
 void UPikminThrowTargetComponent::UpdateTargetLocation_Gamepad()
 {
 	const ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
@@ -107,6 +129,14 @@ void UPikminThrowTargetComponent::UpdateTargetLocation_Mouse()
 		return;
 	}
 
+	// Passive aiming
+	if (MouseTargetState == EPikminMouseTargetState::Passive)
+	{
+		UpdateTargetLocation_Gamepad();
+		return;
+	}
+
+	// Active aiming
 	FHitResult Hit;
 	if (PC->GetHitResultUnderCursor(ECC_Visibility, false, Hit))
 	{

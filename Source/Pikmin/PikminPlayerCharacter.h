@@ -61,6 +61,9 @@ public:
     void CommandDismiss();
 
     UFUNCTION(BlueprintCallable, Category = "Gameplay")
+    void CommandAim();
+
+    UFUNCTION(BlueprintCallable, Category = "Gameplay")
     void CommandThrow();
 
     UFUNCTION(BlueprintCallable, Category = "Gameplay")
