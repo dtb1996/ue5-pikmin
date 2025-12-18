@@ -26,9 +26,26 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Onion")
     int32 StoredPikmin = 0;
 
+    UPROPERTY(EditAnywhere, Category = "Onion|Spawn")
+    float SpawnRadius = 250.0f;
+
+    UPROPERTY(EditAnywhere, Category = "Onion|Spawn")
+    float SpawnRadiusInner = 100.0f;
+
+    UPROPERTY(EditAnywhere, Category = "Onion|Spawn")
+    float GroundTraceHeight = 500.0f;
+
     // Called when food is delivered
     virtual void HandleItemDelivered(EItemType ItemType, int32 PikminYield) override;
 
     UFUNCTION(BlueprintCallable)
     void ReleaseStoredPikmin(int32 NumRequested);
+
+protected:
+    /** Debug */
+    UPROPERTY(EditAnywhere, Category = "Onion|Debug")
+    bool bDrawDebug = false;
+
+private:
+    FVector GetRandomSpawnPointOnGround() const;
 };

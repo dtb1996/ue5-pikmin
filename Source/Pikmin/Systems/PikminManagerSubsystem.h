@@ -60,4 +60,6 @@ private:
 
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<APikminSprout> SproutClass;
+
+    bool FindValidSpawnLocation(UWorld* World, TSubclassOf<AActor> ActorClass, const FVector& DesiredLocation, FVector& OutLocation) const;
 };

@@ -33,12 +33,22 @@ APikminCharacter* UPikminManagerSubsystem::SpawnPikmin(UObject* WorldContextObje
 		return nullptr;
 	}
 
-	APikminCharacter* Pikmin = World->SpawnActor<APikminCharacter>(PikminClass, Location, FRotator::ZeroRotator);
-	if (Pikmin)
+	FVector SpawnLocation = Location;
+
+	// Adjust location if needed
+	FindValidSpawnLocation(World, PikminClass, Location, SpawnLocation);
+
+	FActorSpawnParameters Params;
+	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+	APikminCharacter* Pikmin = World->SpawnActor<APikminCharacter>(PikminClass, SpawnLocation, FRotator::ZeroRotator, Params);
+	if (!Pikmin)
 	{
-		PikminArray.Add(Pikmin);
-		Pikmin->PikminType = PikminType;
+		return nullptr;
 	}
+
+	PikminArray.Add(Pikmin);
+	Pikmin->PikminType = PikminType;
 
 	if (bIsSpawningFromSprout)
 	{
@@ -65,12 +75,20 @@ APikminSprout* UPikminManagerSubsystem::SpawnSprout(UObject* WorldContextObject,
 		return nullptr;
 	}
 
+	FVector SpawnLocation = Location;
+	FindValidSpawnLocation(World, SproutClass, Location, SpawnLocation);
+
+	FActorSpawnParameters Params;
+	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
 	APikminSprout* Sprout = World->SpawnActor<APikminSprout>(SproutClass, Location, FRotator::ZeroRotator);
-	if (Sprout)
+	if (!Sprout)
 	{
-		Sprout->PikminType = PikminType;
-		SproutArray.Add(Sprout);
+		nullptr;
 	}
+
+	Sprout->PikminType = PikminType;
+	SproutArray.Add(Sprout);
 
 	return Sprout;
 }
@@ -103,4 +121,27 @@ APikminCharacter* UPikminManagerSubsystem::GetNextThrowablePikmin(AActor* Player
 	}
 
 	return Closest;
+}
+
+bool UPikminManagerSubsystem::FindValidSpawnLocation(UWorld* World, TSubclassOf<AActor> ActorClass, const FVector& DesiredLocation, FVector& OutLocation) const
+{
+	if (!World || !*ActorClass)
+	{
+		return false;
+	}
+
+	// Temporary transform
+	FTransform TestTransform(FRotator::ZeroRotator, DesiredLocation);
+
+	// Spawn collision component size
+	AActor* DefaultActor = ActorClass->GetDefaultObject<AActor>();
+	if (!DefaultActor)
+	{
+		return false;
+	}
+
+	OutLocation = DesiredLocation;
+
+	// Uses capsule / root collision to find a free spot
+	return World->FindTeleportSpot(DefaultActor, OutLocation, FRotator::ZeroRotator);
 }

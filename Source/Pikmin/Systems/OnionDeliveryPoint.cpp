@@ -33,8 +33,13 @@ void AOnionDeliveryPoint::HandleItemDelivered(EItemType ItemType, int32 PikminYi
 	// Spawn Pikmin sprouts into world
 	for (int i = 0; i < ToSpawn; i++)
 	{
-		FVector SpawnLocation = GetActorLocation() + FVector(0, 0, 100);
+		FVector SpawnLocation = GetRandomSpawnPointOnGround();
 		Manager->SpawnSprout(this, SpawnLocation, PikminType);
+
+		if (bDrawDebug)
+		{
+			DrawDebugSphere(GetWorld(), SpawnLocation, 15.f, 12, FColor::Green, false, 2.0f);
+		}
 	}
 
 	// Store overflow Pikmin
@@ -58,8 +63,50 @@ void AOnionDeliveryPoint::ReleaseStoredPikmin(int32 NumRequested)
 
 	for (int i = 0; i < ToSpawn; i++)
 	{
-		Manager->SpawnPikmin(this, GetActorLocation() + FVector(0, 0, 100), PikminType);
+		FVector SpawnLocation = GetRandomSpawnPointOnGround();
+		Manager->SpawnSprout(this, SpawnLocation, PikminType);
+
+		if (bDrawDebug)
+		{
+			DrawDebugSphere(GetWorld(), SpawnLocation, 15.f, 12, FColor::Green, false, 2.0f);
+		}
 	}
 
 	StoredPikmin -= ToSpawn;
+}
+
+FVector AOnionDeliveryPoint::GetRandomSpawnPointOnGround() const
+{
+	const FVector Origin = GetActorLocation();
+
+	const float Angle = FMath::FRandRange(0.0f, 2.0f * PI);
+
+	const float Radius = FMath::Sqrt(
+		FMath::FRandRange(
+			FMath::Square(SpawnRadiusInner),
+			FMath::Square(SpawnRadius)
+		)
+	);
+
+	const FVector Offset(FMath::Cos(Angle) * Radius, FMath::Sin(Angle) * Radius, 0.0f);
+
+	const FVector TraceStart = Origin + Offset + FVector(0, 0, GroundTraceHeight);
+	const FVector TraceEnd = Origin + Offset - FVector(0, 0, GroundTraceHeight);
+
+	FHitResult Hit;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	if (GetWorld()->LineTraceSingleByChannel(
+		Hit,
+		TraceStart,
+		TraceEnd,
+		ECC_Visibility,
+		Params
+	))
+	{
+		return Hit.ImpactPoint;
+	}
+
+	return Origin + Offset;
 }
