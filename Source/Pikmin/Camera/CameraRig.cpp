@@ -1,6 +1,5 @@
 // Copyright 2025, Rolling Pixels. All Rights Reserved
 
-
 #include "CameraRig.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"

@@ -18,9 +18,6 @@ struct FCarryableObjectArrayWrapper
     TArray<TWeakObjectPtr<ACarryableObject>> CarryableObjects;
 };
 
-/**
- * 
- */
 UCLASS()
 class PIKMIN_API UPikminTaskSubsystem : public UGameInstanceSubsystem
 {

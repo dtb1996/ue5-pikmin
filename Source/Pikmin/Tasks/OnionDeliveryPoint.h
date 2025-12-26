@@ -7,9 +7,6 @@
 #include "Types/PikminTypes.h"
 #include "OnionDeliveryPoint.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class PIKMIN_API AOnionDeliveryPoint : public ADeliveryPoint
 {

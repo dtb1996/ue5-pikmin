@@ -4,5 +4,5 @@
 
 APikminGameMode::APikminGameMode()
 {
-	// stub
+	
 }

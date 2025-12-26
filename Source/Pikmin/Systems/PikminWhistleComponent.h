@@ -6,9 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "PikminWhistleComponent.generated.h"
 
-/**
- * 
- */
 UCLASS(Blueprintable, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent) )
 class PIKMIN_API UPikminWhistleComponent : public UActorComponent
 {

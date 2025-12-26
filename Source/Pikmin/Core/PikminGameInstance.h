@@ -9,9 +9,6 @@
 class APikminCharacter;
 class APikminSprout;
 
-/**
- * 
- */
 UCLASS(Abstract)
 class PIKMIN_API UPikminGameInstance : public UGameInstance
 {

@@ -6,9 +6,6 @@
 #include "Animation/AnimInstance.h"
 #include "PikminPlayerAnimInstance.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class PIKMIN_API UPikminPlayerAnimInstance : public UAnimInstance
 {

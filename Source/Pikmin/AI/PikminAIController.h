@@ -10,9 +10,6 @@
 
 class APikminCharacter;
 
-/**
- * 
- */
 UCLASS()
 class PIKMIN_API APikminAIController : public AAIController
 {

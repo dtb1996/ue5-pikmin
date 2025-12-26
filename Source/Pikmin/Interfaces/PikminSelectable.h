@@ -6,9 +6,6 @@
 #include "UObject/Interface.h"
 #include "PikminSelectable.generated.h"
 
-/**
- * 
- */
 UINTERFACE(Blueprintable)
 class UPikminSelectable : public UInterface
 {

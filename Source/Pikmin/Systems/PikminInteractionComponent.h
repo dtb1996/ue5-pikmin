@@ -9,9 +9,6 @@
 class USphereComponent;
 class APikminPlayerCharacter;
 
-/**
- * 
- */
 UCLASS(Blueprintable, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent) )
 class PIKMIN_API UPikminInteractionComponent : public UActorComponent
 {

@@ -9,9 +9,6 @@
 
 class APikminCharacter;
 
-/**
- * 
- */
 UINTERFACE(Blueprintable)
 class UPikminTaskInteractable : public UInterface
 {

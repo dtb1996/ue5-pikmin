@@ -8,9 +8,6 @@
 
 class APikminCharacter;
 
-/**
- * 
- */
 UCLASS()
 class PIKMIN_API UPikminAnimInstance : public UAnimInstance
 {
