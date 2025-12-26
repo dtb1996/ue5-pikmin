@@ -79,6 +79,8 @@ void ACarryableObject::AssignPikmin_Implementation(APikminCharacter* Pikmin)
 	}
 
 	AssignedPikmin.Add(Pikmin);
+
+	Pikmin->HandleAttachToTaskActor(this, FVector::ZeroVector);
 	
 	UpdateMovement();
 
@@ -97,6 +99,8 @@ void ACarryableObject::AssignPikmin_Implementation(APikminCharacter* Pikmin)
 void ACarryableObject::UnassignPikmin_Implementation(APikminCharacter* Pikmin)
 {
 	AssignedPikmin.Remove(Pikmin);
+
+	Pikmin->HandleDetachFromTaskActor();
 	
 	UpdateMovement();
 
@@ -162,9 +166,18 @@ int32 ACarryableObject::GetPikminYield_Implementation() const
 FVector ACarryableObject::GetPikminAttachPoint(int32 Index) const
 {
 	float Angle = (360.0f / FMath::Max(1, AssignedPikmin.Num())) * Index;
-	FVector Offset = FVector(FMath::Cos(FMath::DegreesToRadians(Angle)), FMath::Sin(FMath::DegreesToRadians(Angle)), 0) * AttachRadius;
-	
-	return GetActorLocation() + Offset;
+
+	FVector HorizontalOffset =
+		FVector(
+			FMath::Cos(FMath::DegreesToRadians(Angle)),
+			FMath::Sin(FMath::DegreesToRadians(Angle)),
+			0.0f
+		) * AttachRadius;
+
+	FVector BaseLocation = GetActorLocation();
+	BaseLocation.Z += PikminAttachHeightOffset;
+
+	return BaseLocation + HorizontalOffset;
 }
 
 void ACarryableObject::UpdatePikminPositions()

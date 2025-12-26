@@ -70,6 +70,9 @@ private:
 	float AttachRadius = 70.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Task")
+	float PikminAttachHeightOffset = -25.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Task")
 	float BaseMoveSpeed = 120.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Task")

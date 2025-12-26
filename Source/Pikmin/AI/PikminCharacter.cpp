@@ -43,6 +43,18 @@ void APikminCharacter::Tick(float DeltaTime)
 			SetActorLocation(Pos);
 		}
 	}
+
+	if (APikminAIController* AI = Cast<APikminAIController>(GetController()))
+	{
+		if (AI->GetState() == EPikminState::Working && CurrentTaskActor.IsValid())
+		{
+			CarryAnimSpeed = CurrentTaskActor->GetVelocity().Size2D();
+		}
+		else
+		{
+			CarryAnimSpeed = GetVelocity().Size2D();
+		}
+	}
 }
 
 void APikminCharacter::OnWhistleSelect_Implementation(AActor* Caller)
@@ -77,40 +89,28 @@ void APikminCharacter::RequestStop()
 	}
 }
 
-void APikminCharacter::AttachToTaskActor(AActor* TaskActor, const FVector& WorldAttachLocation)
+void APikminCharacter::HandleAttachToTaskActor(AActor* TaskActor, const FVector& WorldAttachLocation)
 {
 	if (!TaskActor)
 	{
 		return;
 	}
 
-	// Ensure we stop AI movement and lock transform
-	RequestStop();
-	CurrentTaskActor = TaskActor;
-
-	// Disable character movement and collision while attached
-	GetCharacterMovement()->DisableMovement();
-	SetActorLocation(WorldAttachLocation);
-	AttachToActor(TaskActor, FAttachmentTransformRules::KeepWorldTransform);
-
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	if (CurrentTaskActor != TaskActor)
+	{
+		CurrentTaskActor = TaskActor;
+		return;
+	}
 }
 
-void APikminCharacter::DetachFromTaskActor()
+void APikminCharacter::HandleDetachFromTaskActor()
 {
-	// Restore
-	if (CurrentTaskActor.IsValid())
+	if (!CurrentTaskActor.IsValid())
 	{
-		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		CurrentTaskActor.Reset();
-		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-
-		// Notify controller that we're idle again
-		if (APikminAIController* AI = Cast<APikminAIController>(GetController()))
-		{
-			AI->HandleTaskComplete();
-		}
+		return;
 	}
+
+	CurrentTaskActor = nullptr;
 }
 
 void APikminCharacter::BeginThrowTo(const FVector& Target, float Duration, float Height)
@@ -175,5 +175,5 @@ void APikminCharacter::OnTaskCompleted()
 	}
 
 	// Detach if attached and notify controller
-	DetachFromTaskActor();
+	HandleDetachFromTaskActor();
 }

@@ -52,8 +52,8 @@ public:
     // High-level actions the controller calls
     void RequestMoveTo(const FVector& Location, float AcceptanceRadius = 50.0f);
     void RequestStop();
-    void AttachToTaskActor(AActor* TaskActor, const FVector& WorldAttachLocation);
-    void DetachFromTaskActor();
+    void HandleAttachToTaskActor(AActor* TaskActor, const FVector& WorldAttachLocation);
+    void HandleDetachFromTaskActor();
 
     // Throw helpers
     void BeginThrowTo(const FVector& Target, float Duration = 0.6f, float Height = 350.0f);
@@ -83,6 +83,9 @@ public:
     // Animation / gameplay tuning
     UPROPERTY(EditAnywhere, Category = "Movement")
     float MoveAcceptanceRadius = 50.0f;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Animation")
+    float CarryAnimSpeed = 0.f;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     EPikminType PikminType = EPikminType::Red;
