@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Interfaces/PikminTaskInteractable.h"
-#include "ItemTypes.h"
+#include "Types/ItemTypes.h"
 #include "PikminTaskSubsystem.generated.h"
 
 class ACarryableObject;

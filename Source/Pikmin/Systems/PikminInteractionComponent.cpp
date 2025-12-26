@@ -2,10 +2,8 @@
 
 #include "PikminInteractionComponent.h"
 #include "Components/SphereComponent.h"
-#include "PikminSelectable.h"
-#include "PikminPlayerCharacter.h"
-//#include "GameFramework/Actor.h"
-//#include "Engine/World.h"
+#include "Interfaces/PikminSelectable.h"
+#include "Player/PikminPlayerCharacter.h"
 
 UPikminInteractionComponent::UPikminInteractionComponent()
 {

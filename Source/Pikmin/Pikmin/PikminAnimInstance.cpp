@@ -2,7 +2,7 @@
 
 
 #include "PikminAnimInstance.h"
-#include "AI/PikminCharacter.h"
+#include "Pikmin/PikminCharacter.h"
 
 void UPikminAnimInstance::NativeInitializeAnimation()
 {

@@ -2,7 +2,7 @@
 
 #include "PikminWhistleComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "PikminSelectable.h"
+#include "Interfaces/PikminSelectable.h"
 
 UPikminWhistleComponent::UPikminWhistleComponent()
 {

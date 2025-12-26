@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "CarryableObject.h"
-#include "CarryableAIController.h"
-#include "AI/PikminCharacter.h"
+#include "AI/CarryableAIController.h"
+#include "Pikmin/PikminCharacter.h"
 #include "AI/PikminAIController.h"
 #include "Systems/PikminTaskSubsystem.h"
 #include "Kismet/GameplayStatics.h"

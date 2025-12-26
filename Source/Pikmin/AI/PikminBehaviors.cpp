@@ -2,7 +2,7 @@
 
 #include "PikminBehaviors.h"
 #include "PikminAIController.h"
-#include "PikminCharacter.h"
+#include "Pikmin/PikminCharacter.h"
 #include "Systems/PikminTaskSubsystem.h"
 
 namespace PikminBehaviors

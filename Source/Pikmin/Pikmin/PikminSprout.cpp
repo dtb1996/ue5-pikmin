@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PikminSprout.h"
-#include "PikminManagerSubsystem.h"
-#include "PikminPlayerCharacter.h"
-#include "PikminInteractionComponent.h"
+#include "Systems/PikminManagerSubsystem.h"
+#include "Player/PikminPlayerCharacter.h"
+#include "Systems/PikminInteractionComponent.h"
 
 APikminSprout::APikminSprout()
 {

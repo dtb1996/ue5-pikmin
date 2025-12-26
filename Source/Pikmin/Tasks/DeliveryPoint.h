@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ItemTypes.h"
+#include "Types/ItemTypes.h"
 #include "DeliveryPoint.generated.h"
 
 class USphereComponent;

@@ -2,8 +2,8 @@
 
 
 #include "PikminAIController.h"
-#include "PikminCharacter.h"
-#include "PikminPlayerCharacter.h"
+#include "Pikmin/PikminCharacter.h"
+#include "Player/PikminPlayerCharacter.h"
 #include "Systems/PikminTaskSubsystem.h"
 #include "PikminBehaviors.h"
 

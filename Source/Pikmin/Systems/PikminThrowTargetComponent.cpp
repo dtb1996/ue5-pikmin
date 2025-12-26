@@ -2,7 +2,7 @@
 
 #include "PikminThrowTargetComponent.h"
 #include "Components/DecalComponent.h"
-#include "PikminPlayerController.h"
+#include "Player/PikminPlayerController.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/InputDeviceSubsystem.h"
 #include "Engine/Engine.h"

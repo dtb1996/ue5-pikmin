@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "Systems/ItemTypes.h"
+#include "Types/ItemTypes.h"
 #include "PikminTaskInteractable.generated.h"
 
 class APikminCharacter;

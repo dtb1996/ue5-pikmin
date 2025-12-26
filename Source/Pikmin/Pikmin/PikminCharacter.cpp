@@ -2,7 +2,7 @@
 
 #include "PikminCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "PikminAIController.h"
+#include "AI/PikminAIController.h"
 #include "Components/CapsuleComponent.h"
 
 APikminCharacter::APikminCharacter()

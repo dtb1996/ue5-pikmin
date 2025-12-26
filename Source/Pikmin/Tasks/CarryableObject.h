@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/PikminTaskInteractable.h"
-#include "ItemTypes.h"
+#include "Types/ItemTypes.h"
 #include "CarryableObject.generated.h"
 
 class APikminCharacter;

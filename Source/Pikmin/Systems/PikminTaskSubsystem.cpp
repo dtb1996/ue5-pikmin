@@ -2,7 +2,7 @@
 
 
 #include "PikminTaskSubsystem.h"
-#include "CarryableObject.h"
+#include "Tasks/CarryableObject.h"
 
 TScriptInterface<IPikminTaskInteractable> UPikminTaskSubsystem::GetNearestAvailableTask(const FVector& Location)
 {

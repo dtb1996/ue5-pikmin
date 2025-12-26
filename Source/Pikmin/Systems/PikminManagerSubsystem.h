@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
-#include "PikminTypes.h"
+#include "Types/PikminTypes.h"
 #include "PikminManagerSubsystem.generated.h"
 
 class APikminCharacter;

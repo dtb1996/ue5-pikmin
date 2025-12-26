@@ -1,10 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "PikminManagerSubsystem.h"
-#include "AI/PikminCharacter.h"
-#include "PikminSprout.h"
-#include "PikminGameInstance.h"
+#include "Pikmin/PikminCharacter.h"
+#include "Pikmin/PikminSprout.h"
+#include "Core/PikminGameInstance.h"
 
 void UPikminManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {

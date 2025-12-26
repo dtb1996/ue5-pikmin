@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "PikminTypes.h"
-#include "PikminSelectable.h"
+#include "Types/PikminTypes.h"
+#include "Interfaces/PikminSelectable.h"
 #include "PikminSprout.generated.h"
 
 UCLASS()

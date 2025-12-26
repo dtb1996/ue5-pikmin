@@ -4,8 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "PikminState.h"
-//#include "Systems/PikminTaskSubsystem.h"
+#include "Pikmin/PikminState.h"
 #include "Interfaces/PikminTaskInteractable.h"
 #include "PikminAIController.generated.h"
 

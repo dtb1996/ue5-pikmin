@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Systems/DeliveryPoint.h"
-#include "PikminTypes.h"
+#include "Tasks/DeliveryPoint.h"
+#include "Types/PikminTypes.h"
 #include "OnionDeliveryPoint.generated.h"
 
 /**

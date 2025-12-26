@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Systems/PikminSelectable.h"
+#include "Interfaces/PikminSelectable.h"
 #include "PikminState.h"
-#include "Systems/PikminTypes.h"
+#include "Types/PikminTypes.h"
 #include "PikminCharacter.generated.h"
 
 USTRUCT()

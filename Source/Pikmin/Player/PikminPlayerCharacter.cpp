@@ -8,12 +8,12 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Systems/PikminManagerSubsystem.h"
-#include "AI/PikminCharacter.h"
+#include "Pikmin/PikminCharacter.h"
 #include "AI/PikminAIController.h"
 #include "Systems/PikminWhistleComponent.h"
 #include "Systems/PikminThrowTargetComponent.h"
 #include "Systems/PikminInteractionComponent.h"
-#include "Player/PikminPlayerAnimInstance.h"
+#include "Animation/PikminPlayerAnimInstance.h"
 
 APikminPlayerCharacter::APikminPlayerCharacter()
 {
