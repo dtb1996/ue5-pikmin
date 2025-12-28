@@ -140,7 +140,7 @@ Content/
 ## Development Goals
 
 - System-driven gameplay
-- Readable, modular C++ cod
+- Readable, modular C++ code
 - Reusable subsystem
 - Clean animation layering
 - Minimal focus on graphics, VFX, and UI polish
