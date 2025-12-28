@@ -48,8 +48,50 @@ Source/
 ├── Interfaces/          # Gameplay interaction interfaces
 ├── Player/              # Player character, controller, anim instance
 ├── Systems/             # Core gameplay systems (Pikmin, Carrying, Tasks)
-├── PikminGameMode._
-└── PikminGameInstance._
+├── PikminGameMode
+└── PikminGameInstance
+
+Content/
+├── Core/
+│   ├── Input/
+│   └── GameModes/
+│
+├── Characters/
+│   ├── Player/
+│   │   ├── BP_PlayerCharacter.uasset
+│   │   ├── BP_PlayerController.uasset
+│   │   └── Animations/
+│   └── Pikmin/
+│       ├── BP_PikminCharacter.uasset
+│       ├── BP_PikminSprout.uasset
+│       └── Animations/
+│
+├── Gameplay/
+│   ├── Carryables/
+│   │   ├── BP_CarryableObject_Base.uasset
+│   │   └── BP_Carryable_*.uasset
+│   ├── Delivery/
+│   │   ├── BP_DeliveryPoint_Base.uasset
+│   │   ├── BP_OnionDeliveryPoint.uasset
+│   │   └── BP_TreasureDeliveryPoint.uasset
+│   └── Systems/
+│       └── BP_ItemDropOff_Base.uasset
+│
+├── UI/
+│   ├── HUD/
+│   │   └── BP_HUD.uasset
+│   └── Widgets/
+│       └── WBP_GameScreen.uasset
+│
+├── Art/
+│   ├── Characters/
+│   ├── Props/
+│   ├── Environment/
+│   ├── Materials/
+│   └── Textures/
+│
+└── Maps/
+    └── Lvl_Pikmin.umap
 ```
 
 ## Key Systems
@@ -110,6 +152,7 @@ Source/
 - Contextual Pikmin task priorities
 - Save/load support
 - Add update events for data to be shown on UI (currently using binding events)
+- Update Carryables and Pikmin (and related systems) to use data-driven design
 
 ## Engine & Tools
 
