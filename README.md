@@ -43,13 +43,13 @@ The project is structured around **feature-based folders**, not Unreal templates
 
 ```bash
 Source/
-└── Pikmin/
+├── Pikmin/              # Pikmin character, sprout actor, anim instance
 ├── AI/                  # Pikmin AI controllers, behaviors, states
 ├── Interfaces/          # Gameplay interaction interfaces
 ├── Player/              # Player character, controller, anim instance
 ├── Systems/             # Core gameplay systems (Pikmin, Carrying, Tasks)
 ├── PikminGameMode._
-├── PikminGameInstance._
+└── PikminGameInstance._
 ```
 
 ## Key Systems
@@ -82,7 +82,7 @@ Source/
 
 ## Animation
 
-### Player
+### Player Character
 
 - Layered animation system
 - Upper-body slot for throw / whistle
@@ -109,7 +109,7 @@ Source/
 - Smarter obstacle-aware carrying
 - Contextual Pikmin task priorities
 - Save/load support
-- Multiplayer experimentation
+- Add update events for data to be shown on UI (currently using binding events)
 
 ## Engine & Tools
 
