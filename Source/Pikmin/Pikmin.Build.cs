@@ -25,20 +25,7 @@ public class Pikmin : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[] { });
 
 		PublicIncludePaths.AddRange(new string[] {
-			"Pikmin",
-			"Pikmin/Variant_Platforming",
-			"Pikmin/Variant_Platforming/Animation",
-			"Pikmin/Variant_Combat",
-			"Pikmin/Variant_Combat/AI",
-			"Pikmin/Variant_Combat/Animation",
-			"Pikmin/Variant_Combat/Gameplay",
-			"Pikmin/Variant_Combat/Interfaces",
-			"Pikmin/Variant_Combat/UI",
-			"Pikmin/Variant_SideScrolling",
-			"Pikmin/Variant_SideScrolling/AI",
-			"Pikmin/Variant_SideScrolling/Gameplay",
-			"Pikmin/Variant_SideScrolling/Interfaces",
-			"Pikmin/Variant_SideScrolling/UI"
+			"Pikmin"
 		});
 
 		// Uncomment if you are using Slate UI
