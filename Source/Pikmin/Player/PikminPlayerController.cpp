@@ -6,7 +6,6 @@
 #include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
 #include "InputAction.h"
-#include "Camera/CameraRig.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "PikminPlayerCharacter.h"
@@ -35,25 +34,6 @@ void APikminPlayerController::BeginPlay()
 
 		// clear any autopitch from toggling before play
 		PitchToggleStartRotation = StartRot;
-	}
-
-	CameraRig = FindCameraRig();
-	if (!CameraRig)
-	{
-		// try to get camera rig attached to pawn (if pawn spawned rig)
-		if (APawn* P = GetPawn())
-		{
-			TArray<AActor*> ActorChildren;
-			P->GetAttachedActors(ActorChildren);
-			for (AActor* A : ActorChildren)
-			{
-				if (ACameraRig* CR = Cast<ACameraRig>(A))
-				{
-					CameraRig = CR;
-					break;
-				}
-			}
-		}
 	}
 }
 
@@ -90,11 +70,6 @@ void APikminPlayerController::SetupInputComponent()
 void APikminPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	//if (!CameraRig)
-	//{
-	//	CameraRig = FindCameraRig();
-	//}
 
 	if (!IsLocalPlayerController())
 	{
@@ -202,11 +177,6 @@ void APikminPlayerController::HandleCameraZoom(const FInputActionValue& Value)
 			CameraBoom->TargetArmLength = NewZoom;
 		}
 	}
-
-	if (!CameraRig)
-	{
-		return;
-	}
 }
 
 void APikminPlayerController::HandleResetCamera(const FInputActionValue& Value)
@@ -272,13 +242,6 @@ void APikminPlayerController::HandleWhistleStarted(const FInputActionValue& Valu
 		PlayerCharacter->StartWhistle();
 	}
 
-	if (!CameraRig)
-	{
-		return;
-	}
-
-	CameraRig->EnterState(EPikminCameraState::CommandAim, 0.15f);
-
 	// TODO: trigger whistle gameplay effect here
 }
 
@@ -318,33 +281,6 @@ void APikminPlayerController::HandleThrowAimReleased(const FInputActionValue& Va
 		PlayerCharacter->CommandThrow();
 		PlayerCharacter->SetMovementEnabled(true);
 	}
-}
-
-ACameraRig* APikminPlayerController::FindCameraRig()
-{
-	// Prefer camera rig attached to pawn
-	if (APawn* P = GetPawn())
-	{
-		TArray<AActor*> Attached;
-		P->GetAttachedActors(Attached);
-		for (AActor* A : Attached)
-		{
-			if (ACameraRig* Rig = Cast<ACameraRig>(A))
-			{
-				return Rig;
-			}
-		}
-	}
-
-	// Otherwise find first placed CameraRig in level
-	TArray<AActor*> Found;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraRig::StaticClass(), Found);
-	if (Found.Num() > 0)
-	{
-		return Cast<ACameraRig>(Found[0]);
-	}
-
-	return nullptr;
 }
 
 void APikminPlayerController::HandleMouseEdgeCameraRotate(float DeltaSeconds)

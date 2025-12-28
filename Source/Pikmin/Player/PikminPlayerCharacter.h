@@ -8,7 +8,6 @@
 
 class USpringArmComponent;
 class UCameraComponent;
-class ACameraRig;
 class UPikminWhistleComponent;
 class UPikminThrowTargetComponent;
 class UPikminInteractionComponent;
@@ -22,10 +21,6 @@ class APikminPlayerCharacter : public ACharacter
 public:
     APikminPlayerCharacter();
 
-protected:
-	virtual void BeginPlay() override;
-
-public:
     /** Camera boom */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
     USpringArmComponent* CameraBoom;
@@ -48,10 +43,6 @@ public:
     UPikminInteractionComponent* InteractionComponent;
 
 public:
-    /** Spawn or attach a camera rig to this pawn (optional helper) */
-    UFUNCTION(BlueprintCallable, Category = "Camera")
-    ACameraRig* SpawnAndAttachCameraRig();
-
     /** Update Pikmin state to following */
     UFUNCTION(BlueprintCallable, Category = "Gameplay")
     void CommandFollow();
@@ -78,14 +69,5 @@ public:
     void SetMovementEnabled(bool bEnabled);
 
     UPikminPlayerAnimInstance* GetPikminAnimInstance() const;
-
-protected:   
-    /** Camera rig class to spawn */
-    UPROPERTY(EditDefaultsOnly, Category = "Camera")
-    TSubclassOf<ACameraRig> CameraRigClass;
-
-    /** Runtime pointer to spawned rig */
-    UPROPERTY()
-    ACameraRig* SpawnedCameraRig;
 };
 

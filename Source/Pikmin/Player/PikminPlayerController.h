@@ -9,7 +9,6 @@
 
 class UInputMappingContext;
 class UInputAction;
-class ACameraRig;
 
 UCLASS(abstract)
 class APikminPlayerController : public APlayerController
@@ -25,10 +24,6 @@ protected:
     virtual void Tick(float DeltaSeconds) override;
 
 private:
-	///** Input Mapping Contexts */
-	//UPROPERTY(EditAnywhere, Category ="Input|Input Mappings")
-	//TArray<UInputMappingContext*> DefaultMappingContexts;
-
     /** Input mapping context */
     UPROPERTY(EditDefaultsOnly, Category = "Input")
     UInputMappingContext* InputContext;
@@ -66,10 +61,6 @@ private:
 
     UPROPERTY(EditDefaultsOnly, Category = "Camera|Mouse Edge Rotate")
     bool bEnableMouseEdgeRotate = true;
-
-    /** Cached camera rig pointer */
-    UPROPERTY()
-    ACameraRig* CameraRig;
 
     // --- Camera Reset Smooth Lerp ---
     bool bIsResettingCamera = false;
@@ -110,9 +101,6 @@ private:
     void HandleDismiss(const FInputActionValue& Value);
     void HandleThrowAimPressed(const FInputActionValue& Value);
     void HandleThrowAimReleased(const FInputActionValue& Value);
-
-    /** Helper to find camera rig in world (first one or attached to pawn) */
-    ACameraRig* FindCameraRig();
 
     void HandleMouseEdgeCameraRotate(float DeltaSeconds);
 };

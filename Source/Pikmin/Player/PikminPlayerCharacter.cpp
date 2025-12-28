@@ -1,7 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "PikminPlayerCharacter.h"
-#include "Camera/CameraRig.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -50,44 +49,6 @@ APikminPlayerCharacter::APikminPlayerCharacter()
 
     // Interaction component
     InteractionComponent = CreateDefaultSubobject<UPikminInteractionComponent>(TEXT("InteractionComponent"));
-}
-
-void APikminPlayerCharacter::BeginPlay()
-{
-    Super::BeginPlay();
-
-    //// Optionally spawn and attach a camera rig automatically
-    //if (CameraRigClass)
-    //{
-    //    SpawnedCameraRig = SpawnAndAttachCameraRig();
-    //    if (SpawnedCameraRig)
-    //    {
-    //        SpawnedCameraRig->SetFollowTarget(this);
-    //        
-
-    //        if (APlayerController* PC = Cast<APlayerController>(GetController()))
-    //        {
-    //            // Switch the active camera to the camera rig
-    //            PC->SetViewTarget(SpawnedCameraRig);
-    //        }
-    //    }
-    //}
-}
-
-ACameraRig* APikminPlayerCharacter::SpawnAndAttachCameraRig()
-{
-    if (!CameraRigClass) return nullptr;
-    FActorSpawnParameters Params;
-    Params.Owner = this;
-    Params.Instigator = GetInstigator();
-    ACameraRig* Rig = GetWorld()->SpawnActor<ACameraRig>(CameraRigClass, GetActorLocation(), GetActorRotation(), Params);
-    if (Rig)
-    {
-        // Attach so it moves with pawn if desired, or leave separate if you want independent smoothing
-        Rig->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
-        Rig->SetFollowTarget(this);
-    }
-    return Rig;
 }
 
 void APikminPlayerCharacter::CommandFollow()
