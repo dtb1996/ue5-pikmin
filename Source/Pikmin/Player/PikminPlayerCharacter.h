@@ -13,6 +13,14 @@ class UPikminThrowTargetComponent;
 class UPikminInteractionComponent;
 class UPikminPlayerAnimInstance;
 
+UENUM()
+enum class EPikminAimAction : uint8
+{
+    None,
+    Pluck,
+    Throw
+};
+
 UCLASS(abstract)
 class APikminPlayerCharacter : public ACharacter
 {
@@ -42,6 +50,9 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interaction")
     UPikminInteractionComponent* InteractionComponent;
 
+private:
+    EPikminAimAction CurrentAimAction = EPikminAimAction::None;
+
 public:
     /** Update Pikmin state to following */
     UFUNCTION(BlueprintCallable, Category = "Gameplay")
@@ -69,5 +80,8 @@ public:
     void SetMovementEnabled(bool bEnabled);
 
     UPikminPlayerAnimInstance* GetPikminAnimInstance() const;
+
+private:
+    void ExecuteThrow();
 };
 

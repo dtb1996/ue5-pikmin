@@ -91,9 +91,12 @@ void APikminPlayerCharacter::CommandDismiss()
 
 void APikminPlayerCharacter::CommandAim()
 {
+    CurrentAimAction = EPikminAimAction::None;
+
     // If pluckable sprout in range then pluck instead of throwing
     if (InteractionComponent && InteractionComponent->GetCurrentSelectable() != nullptr)
     {
+        CurrentAimAction = EPikminAimAction::Pluck;
         TryPluck();
         return;
     }
@@ -103,32 +106,31 @@ void APikminPlayerCharacter::CommandAim()
         return;
     }
 
+    CurrentAimAction = EPikminAimAction::Throw;
     ThrowTargetComponent->BeginMouseAim();
 }
 
 void APikminPlayerCharacter::CommandThrow()
 {
-    if (!ThrowTargetComponent)
+    switch (CurrentAimAction)
     {
-        return;
+    case EPikminAimAction::Pluck:
+        // Nothing to do here, pluck handled on press
+        break;
+    case EPikminAimAction::Throw:
+        ExecuteThrow();
+        break;
+
+    default:
+        break;
     }
 
-    if (UPikminPlayerAnimInstance* Anim = GetPikminAnimInstance())
+    CurrentAimAction = EPikminAimAction::None;
+
+    if (ThrowTargetComponent)
     {
-        Anim->PlayThrowMontage();
+        ThrowTargetComponent->EndMouseAim();
     }
-
-    // Throw Pikmin
-    UPikminManagerSubsystem* PikminManager = GetGameInstance()->GetSubsystem<UPikminManagerSubsystem>();
-    APikminCharacter* Pikmin = PikminManager->GetNextThrowablePikmin(this);
-
-    if (Pikmin)
-    {
-        const FVector TargetLocation = ThrowTargetComponent->GetTargetLocation();
-        Pikmin->BeginThrowTo(TargetLocation);
-    }
-
-    ThrowTargetComponent->EndMouseAim();
 }
 
 void APikminPlayerCharacter::TryPluck()
@@ -194,4 +196,22 @@ UPikminPlayerAnimInstance* APikminPlayerCharacter::GetPikminAnimInstance() const
     }
     
     return nullptr;
+}
+
+void APikminPlayerCharacter::ExecuteThrow()
+{
+    if (UPikminPlayerAnimInstance* Anim = GetPikminAnimInstance())
+    {
+        Anim->PlayThrowMontage();
+    }
+
+    // Throw Pikmin if possible
+    if (UPikminManagerSubsystem* PikminManager = GetGameInstance()->GetSubsystem<UPikminManagerSubsystem>())
+    {
+        if (APikminCharacter* Pikmin = PikminManager->GetNextThrowablePikmin(this))
+        {
+            const FVector TargetLocation = ThrowTargetComponent->GetTargetLocation();
+            Pikmin->BeginThrowTo(TargetLocation);
+        }
+    }
 }
