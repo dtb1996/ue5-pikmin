@@ -161,6 +161,20 @@ Content/
 - Input: Keyboard / Gamepad
 - AI: Custom controllers & logic (no Behavior Trees yet)
 
+## Asset Attribution
+
+This project uses free asset packs created by Quaternius and released under the CC0 (Public Domain) license.
+
+The following asset packs were used:
+
+- [Ultimate Animated Character Pack](https://quaternius.com/packs/ultimatedanimatedcharacter.html)
+- [Ultimate Food Pack](https://quaternius.com/packs/ultimatefood.html)
+- [Ultimate Space Kit](https://quaternius.com/packs/ultimatespacekit.html)
+- [Ultimate Stylized Nature Pack](https://quaternius.com/packs/ultimatestylizednature.html)
+
+All assets are free to use, modify, and redistribute under the CC0 license.
+Attribution is not required, but is provided here out of appreciation for the creator’s work.
+
 ## Disclaimer – Nintendo-Inspired Gameplay
 
 This project is **inspired by gameplay concepts from Nintendo’s _Pikmin_ series**, including ideas such as small-creature squad control, carrying mechanics, and whistle-based commands.
